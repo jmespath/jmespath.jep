@@ -8,6 +8,7 @@ to the spec make sense for all JMESPath libraries.  A JEP helps to work through
 the design process for new additions and ensures that the JMESPath community
 has a chance to give feedback before it's officially part of the specification.
 
+Proposals are marked either ["draft"](./proposals/draft), ["accepted"](./proposals/accepted), or "rejected".
 
 ## Things that need a JEP
 
