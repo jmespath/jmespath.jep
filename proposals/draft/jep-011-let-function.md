@@ -49,7 +49,7 @@ unique in the `states` list.  This is currently not possible with JMESPath.
 In this example we can hard code the state `WA`:
 
 ```
-states[?name==`WA`].cities
+states[?name==`WA`].cities[]
 ```
 
 but it is not possible to base this on a value of `first_choice`, which
@@ -230,7 +230,7 @@ for explicit references using a specific token, say `$`.
 The original example in the “Motivation” section would be:
 
 ```
-states[?name==$.first_choice].cities
+states[?name==$.first_choice].cities[]
 ```
 
 While this could work, this has a number of downsides, the biggest one being
