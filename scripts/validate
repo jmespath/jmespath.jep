@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+# Quick sanity check for proposals to ensure they're not missing
+# any required sections.
+# We're not pulling in a third party markdown parser to avoid
+# needing a full on python environment to validate these proposals.
+# This may change depending on our needs.
+
+
+import sys
+import argparse
+from typing import List
+from pathlib import Path
+
+
+ROOT_DIR = Path(__file__).absolute().parent.parent
+PROPOSAL_DIR = ROOT_DIR / 'proposals'
+REQUIRED_SECTIONS = [
+    'Abstract', 'Motivation', 'Specification', 'Rationale'
+]
+IGNORE_JEPS = 12
+
+
+def validate_jeps(args):
+    errors = []
+    for filepath in sorted(PROPOSAL_DIR.iterdir()):
+        if int(filepath.name.split('-', 1)[0]) <= IGNORE_JEPS:
+            # The earlier JEPs don't follow these required sections
+            # so we'll skip over these for now.
+            continue
+        errors.extend(validate_jep(filepath))
+    if errors:
+        for error in errors:
+            sys.stdout.write(error)
+        return 1
+    return 0
+
+
+def validate_jep(filepath: Path) -> List[str]:
+    errors = []
+    lines = filepath.read_text().splitlines()
+    sections = set(REQUIRED_SECTIONS)
+    for line in lines:
+        if line.startswith('## '):
+            name = line[3:].strip()
+            if name in sections:
+                sections.remove(name)
+    if sections:
+        errors.append(f"{filepath.name:20s} is missing sections: "
+                      f"{', '.join(sections)}\n")
+    return errors
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    args = parser.parse_args()
+    return validate_jeps(args)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

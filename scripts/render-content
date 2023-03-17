@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+from typing import List
+import subprocess
+import argparse
+import shutil
+from pathlib import Path
+
+
+ROOT_DIR = Path(__file__).absolute().parent.parent
+BUILD_DIR = ROOT_DIR / 'build'
+PROPOSAL_DIR = ROOT_DIR / 'proposals'
+OUTPUT_DIR = BUILD_DIR / 'proposals'
+
+
+def render_content(args):
+    files = []
+    if OUTPUT_DIR.is_dir():
+        shutil.rmtree(OUTPUT_DIR)
+    OUTPUT_DIR.mkdir(parents=True)
+    for filepath in sorted(PROPOSAL_DIR.iterdir()):
+        dest_file = OUTPUT_DIR.joinpath(filepath.name)
+        dest_file.symlink_to(filepath)
+        files.append(dest_file)
+    readme = PROPOSAL_DIR.parent.joinpath('README.md')
+    OUTPUT_DIR.joinpath('overview.md').symlink_to(readme)
+    generate_summary_md(files)
+    subprocess.run(['mdbook', 'build'])
+
+
+def generate_summary_md(files: List[Path]):
+    summary_file = OUTPUT_DIR.joinpath('SUMMARY.md')
+    with summary_file.open('w') as f:
+        f.write('[Overview](overview.md)')
+        for filepath in files:
+            line = f'- [{filepath.stem}]({filepath.name})'
+            f.write(line)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    args = parser.parse_args()
+    render_content(args)
+
+
+if __name__ == '__main__':
+    main()
