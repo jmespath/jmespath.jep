@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>0010-slice-projects - JMESPath Enhancement Proposals</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded affix "><a href="0001-nested-expressions.html">0001-nested-expressions</a></li><li class="chapter-item expanded affix "><a href="0003-functions.html">0003-functions</a></li><li class="chapter-item expanded affix "><a href="0004-pipes.html">0004-pipes</a></li><li class="chapter-item expanded affix "><a href="0005-array-slices.html">0005-array-slices</a></li><li class="chapter-item expanded affix "><a href="0006-improved-identifiers.html">0006-improved-identifiers</a></li><li class="chapter-item expanded affix "><a href="0007-filter-expressions.html">0007-filter-expressions</a></li><li class="chapter-item expanded affix "><a href="0008-exptype.html">0008-exptype</a></li><li class="chapter-item expanded affix "><a href="0009-improved.filters.html">0009-improved.filters</a></li><li class="chapter-item expanded affix "><a href="0010-slice-projects.html" class="active">0010-slice-projects</a></li><li class="chapter-item expanded affix "><a href="0011-let-function.html">0011-let-function</a></li><li class="chapter-item expanded affix "><a href="0012-raw-string-literals.html">0012-raw-string-literals</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">JMESPath Enhancement Proposals</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="slice-projections"><a class="header" href="#slice-projections">Slice Projections</a></h1>
+<ul>
+<li>JEP: 10</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2015-02-08</li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">Abstract</a></h2>
+<p>This document proposes modifying the semantics of slice expressions to
+create projections, which brings consistency with the wildcard,
+flattening, and filtering projections.</p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>JEP 5 introduced slice expressions.  This added python slice semantics
+to JSON.  Slicing does not produce a projection so expressions such as
+the following will always return <code>null</code>:  <code>myarray[:10].foo.bar</code>.</p>
+<p>Instead if you wanted to access <code>foo.bar</code>  for each element in the
+array slice you currently have to write <code>myarray[:10][*].foo.bar</code>.</p>
+<p>This JEP proposes that a slice expression will create a projection.</p>
+<h3 id="rationale"><a class="header" href="#rationale">Rationale</a></h3>
+<p>A reasonable objection to this JEP is that this is unnecessary because, as
+shown in the example above, you can take any slice and create a projection via
+<code>[\*]</code>.  This is entirely true, unlike other JEPs, this JEP does not enable
+any behavior that was previously not possible.</p>
+<p>Instead, the main reason for this JEP is for consistency.  Right now there are
+three types of array projections:</p>
+<ul>
+<li>
+<p>List Projections (<code>foo[*].bar</code>)</p>
+</li>
+<li>
+<p>Filter Projections (<code>foo[?a==b].bar</code>)</p>
+</li>
+<li>
+<p>Flatten Projections (<code>foo[].bar</code>)</p>
+</li>
+</ul>
+<p>Note the general form, <code>foo[&lt;stuff here&gt;].&lt;child-expr&gt;</code>.  Each of the
+existing array projections have the same general semantics:</p>
+<ul>
+<li>
+<p>Take the left hand side, which is a list, and produce another list as a
+result of evaluating the left hand side.  This newly produced list will
+contain elements of the original input (or elements of the elements of
+the original input in the case of the flatten projection).</p>
+</li>
+<li>
+<p>Evaluate the right hand side against each element in the list produced
+from evaluating the left hand side.</p>
+</li>
+</ul>
+<p>So in general, the left hand side is responsible for creating a new list
+but not for manipulating individual elements of the list.  The right hand
+side is for manipulating individual elements of the list.  In the case
+of the list projection, every element from the original list is used.
+In the case of a filter projection, only elements matching an expression
+are passed to the right hand side.  In the case of a flatten projection,
+sub arrays are merged before passing the expression onto the right hand
+side.</p>
+<p>It’s a reasonable expectation that slices behave similar.  After all,
+slices take an array and produce a sub array.  It many ways, it’s very
+similar to filter projections.  While filter projections only include
+elements that match a particular expression, slice projections
+only include elements from and to a specific index.  Given its semantics
+are so close to the filter projections, slices should create projections
+to be consistent.</p>
+<h2 id="specification"><a class="header" href="#specification">Specification</a></h2>
+<p>Whenver a slice is created, a projection will be created. This will be the
+fourth type of array projection in JMESPath.  In addition to the existing array
+projections:</p>
+<ul>
+<li>
+<p>List Projections</p>
+</li>
+<li>
+<p>Flatten Projections</p>
+</li>
+<li>
+<p>Filter Projections</p>
+</li>
+</ul>
+<p>A new projection type, the slice projection will be added.  A slice projection
+is evaluated similar to the other array projections.  Given a slice projection
+which contains a left hand side containing the slice expression and a right
+hand side, the slice expression is evaluated to create a new sub array, and
+each expression on the right hand side is evaluted against each element from
+the array slice to create the final result.</p>
+<p>This JEP does not include any modifications to the JMESPath grammar.</p>
+<h2 id="impact"><a class="header" href="#impact">Impact</a></h2>
+<p>The impact to existing users of slices is minimal.  Consider:</p>
+<ul>
+<li>
+<p>Existing expressions such as <code>foo[:10].bar</code> are currently returning
+<code>null</code>.  Now they will return non <code>null</code> values.</p>
+</li>
+<li>
+<p>The only impact to existing users is if someone had an expression such as
+<code>foo[:10][0]</code>, which given the projection semantics will now create a list
+containing the 0th element from each sublist.  Before this JEP, that
+expression is equivalent to <code>foo[0]</code> so the slice is unnecessary.  And any
+users that actually had expressions like this can now just use <code>foo[0]</code>
+instead.</p>
+</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="0009-improved.filters.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="0011-let-function.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="0009-improved.filters.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="0011-let-function.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

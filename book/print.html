@@ -1,0 +1,2626 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>JMESPath Enhancement Proposals</title>
+        <meta name="robots" content="noindex" />
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded affix "><a href="0001-nested-expressions.html">0001-nested-expressions</a></li><li class="chapter-item expanded affix "><a href="0003-functions.html">0003-functions</a></li><li class="chapter-item expanded affix "><a href="0004-pipes.html">0004-pipes</a></li><li class="chapter-item expanded affix "><a href="0005-array-slices.html">0005-array-slices</a></li><li class="chapter-item expanded affix "><a href="0006-improved-identifiers.html">0006-improved-identifiers</a></li><li class="chapter-item expanded affix "><a href="0007-filter-expressions.html">0007-filter-expressions</a></li><li class="chapter-item expanded affix "><a href="0008-exptype.html">0008-exptype</a></li><li class="chapter-item expanded affix "><a href="0009-improved.filters.html">0009-improved.filters</a></li><li class="chapter-item expanded affix "><a href="0010-slice-projects.html">0010-slice-projects</a></li><li class="chapter-item expanded affix "><a href="0011-let-function.html">0011-let-function</a></li><li class="chapter-item expanded affix "><a href="0012-raw-string-literals.html">0012-raw-string-literals</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">JMESPath Enhancement Proposals</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="jmespath-enhancement-proposals"><a class="header" href="#jmespath-enhancement-proposals">JMESPath Enhancement Proposals</a></h1>
+<p>The JMESPath Enhancement Proposals (JEP) process is used to modify the
+JMESPath language and specification.  There are implementations of JMESPath
+in over 10 languages, and this process ensures stakeholders and community
+members have the opportunity to review and provide feedback before it's
+officially part of the specification.</p>
+<h2 id="things-that-need-a-jep"><a class="header" href="#things-that-need-a-jep">Things that need a JEP</a></h2>
+<p>Any functional change that would require an update to the
+<a href="http://jmespath.org/specification.html">specification</a> requires a JEP.</p>
+<p>This includes, but is not limited to:</p>
+<ul>
+<li>New syntax</li>
+<li>New functions</li>
+<li>New semantics</li>
+</ul>
+<p>You can review the existing JEPs in this repo to get a sense of the type
+of changes that require a JEP.</p>
+<h2 id="things-that-do-not-need-a-jep"><a class="header" href="#things-that-do-not-need-a-jep">Things that do not need a JEP</a></h2>
+<p>Anything that is specific to a JMESPath library does not need a JEP.  You
+should defer to the specific library's contributing guide.  This can include
+additional language specific APIs, extension points (e.g. adding custom
+functions), configuration options, etc.</p>
+<h2 id="guidelines-for-proposing-new-features"><a class="header" href="#guidelines-for-proposing-new-features">Guidelines for proposing new features</a></h2>
+<p>First, make sure that the feature has not been previously proposed.  If it has,
+make sure to reference prior proposals and explain why this new proposal should
+be considered despite similar proposals not being accepted.</p>
+<p>Writing a JEP can be a lot of work, so it can help to get initial guidance
+before going too far.  A well thought out, high quality JEP helps its chance
+of acceptance and helps ensure a productive review process.</p>
+<p>Before writing a JEP, you can create an issue for initial high level feedback
+in order to get a sense of the likelihood of a JEP being accepted.  You
+can also use that issue to gauge interest in the feature.</p>
+<h2 id="the-jep-process"><a class="header" href="#the-jep-process">The JEP Process</a></h2>
+<ol>
+<li>
+<p>Fork <a href="https://github.com/jmespath/jmespath.jep">this repository</a>.</p>
+</li>
+<li>
+<p>Copy <code>0000-jep-template.md</code> to <code>proposals/0000-feature-name.md</code>,
+where <code>feature-name</code> is a high level descriptive name of the
+proposal.  You don't need to add a JEP number, one will be
+assigned during the review process.</p>
+</li>
+<li>
+<p>Fill in all sections of the JEP template.  Be mindful of the
+&quot;Motivation&quot; and &quot;Rationale&quot; sections.  These are an important
+part of driving concensus for a JEP.</p>
+</li>
+<li>
+<p>Submit a pull request to this repo.</p>
+</li>
+<li>
+<p>The JEP will be reviewed and feedback will be provided.  Proposals
+often go through several rounds of feedback, this is a normal and
+expected part of the process.</p>
+</li>
+<li>
+<p>As you incorporate feedback, do not rebase your commits.  This ensures
+the history and evolution of the proposal remains visible.</p>
+</li>
+<li>
+<p>The discussions will eventually stabilize to one of several states:</p>
+<ul>
+<li>The JEP has concensus for both the functionality and the
+proposed specification and is ready to be accepted.</li>
+<li>The JEP has concensus for the feature but there is not concensus
+with the specification.</li>
+<li>The JEP does not have concensus for the feature.</li>
+<li>The JEP loses steam and the discussions go stale.  This will result
+in the PR being closed, but is subject to being reopened by anyone
+that wants to continue working on the JEP.</li>
+</ul>
+</li>
+<li>
+<p>Once the JEP is approved by the JMESPath core team the pull request
+will be merged.</p>
+</li>
+<li>
+<p>The relevant parts of the &quot;Specification&quot; section will be added to the
+JMESPath specification, and the tests cases from the &quot;Test Cases&quot; section
+of the JEP will be added to the
+<a href="https://github.com/jmespath/jmespath.test">jmespath.test</a> repo.</p>
+</li>
+<li>
+<p>JMESPath libraries can now implement the accepted JEP.</p>
+</li>
+</ol>
+<h3 id="tenets-of-jmespath"><a class="header" href="#tenets-of-jmespath">Tenets of JMESPath</a></h3>
+<p>When proposing new features, keep these tenets in mind.  Adhering to
+these tenets gives your proposal a higher likelihood of being accepted:</p>
+<ul>
+<li>JMESPath is not specific to a particular programming language.  Avoid
+constructs that are difficult to implement in another language.</li>
+<li>JMESPath strives to have one way to do something.</li>
+<li>Features are driven from real world use cases.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="nested-expressions"><a class="header" href="#nested-expressions">Nested Expressions</a></h1>
+<ul>
+<li>JEP: 1</li>
+<li>Author: Michael Dowling</li>
+<li>Created: 2013-11-27</li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">Abstract</a></h2>
+<p>This document proposes modifying the <a href="https://jmespath.readthedocs.org/en/latest/specification.html#grammar">JMESPath grammar</a>
+to support arbitrarily nested expressions within <code>multi-select-list</code> and
+<code>multi-select-hash</code> expressions.</p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>This JMESPath grammar currently does not allow arbitrarily nested expressions
+within <code>multi-select-list</code> and <code>multi-select-hash</code> expressions. This
+prevents nested branching expressions, nested <code>multi-select-list</code> expressions
+within other multi expressions, and nested <code>or-expressions</code> within any
+multi-expression.</p>
+<p>By allowing any expression to be nested within a <code>multi-select-list</code> and
+<code>multi-select-hash</code> expression, we can trim down several grammar rules and
+provide customers with a much more flexible expression DSL.</p>
+<p>Supporting arbitrarily nested expressions within other expressions requires:</p>
+<ul>
+<li>
+<p>Updating the grammar to remove <code>non-branched-expr</code></p>
+</li>
+<li>
+<p>Updating compliance tests to add various permutations of the grammar to
+ensure implementations are compliant.</p>
+</li>
+<li>
+<p>Updating the JMESPath documentation to reflect the ability to arbitrarily
+nest expressions.</p>
+</li>
+</ul>
+<h2 id="nested-expression-examples"><a class="header" href="#nested-expression-examples">Nested Expression Examples</a></h2>
+<h3 id="nested-branch-expressions"><a class="header" href="#nested-branch-expressions">Nested branch expressions</a></h3>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: [
+            {
+                &quot;bar&quot;: &quot;abc&quot;
+            }, {
+                &quot;bar&quot;: &quot;def&quot;
+            }
+        ],
+        &quot;qux&quot;: [&quot;zero&quot;]
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz[\*].bar, qux[0]]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    [
+        &quot;abc&quot;,
+        &quot;def&quot;
+    ],
+    &quot;zero&quot;
+]
+</code></pre>
+<h3 id="nested-branch-expressions-with-nested-mutli-select"><a class="header" href="#nested-branch-expressions-with-nested-mutli-select">Nested branch expressions with nested mutli-select</a></h3>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: [
+            {
+                &quot;bar&quot;: &quot;a&quot;,
+                &quot;bam&quot;: &quot;b&quot;,
+                &quot;boo&quot;: &quot;c&quot;
+            }, {
+                &quot;bar&quot;: &quot;d&quot;,
+                &quot;bam&quot;: &quot;e&quot;,
+                &quot;boo&quot;: &quot;f&quot;
+            }
+        ],
+        &quot;qux&quot;: [&quot;zero&quot;]
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz[\*].[bar, boo], qux[0]]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    [
+        [
+            &quot;a&quot;,
+            &quot;c&quot;
+        ],
+        [
+            &quot;d&quot;,
+            &quot;f&quot;
+        ]
+    ],
+    &quot;zero&quot;
+]
+</code></pre>
+<h3 id="nested-or-expressions"><a class="header" href="#nested-or-expressions">Nested or expressions</a></h3>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: [
+            {
+                &quot;bar&quot;: &quot;a&quot;,
+                &quot;bam&quot;: &quot;b&quot;,
+                &quot;boo&quot;: &quot;c&quot;
+            }, {
+                &quot;bar&quot;: &quot;d&quot;,
+                &quot;bam&quot;: &quot;e&quot;,
+                &quot;boo&quot;: &quot;f&quot;
+            }
+        ],
+        &quot;qux&quot;: [&quot;zero&quot;]
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz[\*].not_there || baz[\*].bar, qux[0]]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    [
+        &quot;a&quot;,
+        &quot;d&quot;
+    ],
+    &quot;zero&quot;
+]
+</code></pre>
+<h3 id="no-breaking-changes"><a class="header" href="#no-breaking-changes">No breaking changes</a></h3>
+<p>Because there are no breaking changes from this modification, existing
+multi-select expressions will still work unchanged:</p>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: {
+            &quot;abc&quot;: 123,
+            &quot;bar&quot;: 456
+        }
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz, baz.bar]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    {
+        &quot;abc&quot;: 123,
+        &quot;bar&quot;: 456
+    },
+    456
+]
+</code></pre>
+<h2 id="modified-grammar"><a class="header" href="#modified-grammar">Modified Grammar</a></h2>
+<p>The following modified JMESPath grammar supports arbitrarily nested expressions
+and is specified using ABNF, as described in <a href="https://tools.ietf.org/html/rfc4234">RFC4234</a></p>
+<pre><code>expression        = sub-expression / index-expression / or-expression / identifier / &quot;*&quot;
+expression        =/ multi-select-list / multi-select-hash
+sub-expression    = expression &quot;.&quot; expression
+or-expression     = expression &quot;||&quot; expression
+index-expression  = expression bracket-specifier / bracket-specifier
+multi-select-list = &quot;[&quot; ( expression *( &quot;,&quot; expression ) ) &quot;]&quot;
+multi-select-hash = &quot;{&quot; ( keyval-expr *( &quot;,&quot; keyval-expr ) ) &quot;}&quot;
+keyval-expr       = identifier &quot;:&quot; expression
+bracket-specifier = &quot;[&quot; (number / &quot;*&quot;) &quot;]&quot;
+number            = [-]1*digit
+digit             = &quot;1&quot; / &quot;2&quot; / &quot;3&quot; / &quot;4&quot; / &quot;5&quot; / &quot;6&quot; / &quot;7&quot; / &quot;8&quot; / &quot;9&quot; / &quot;0&quot;
+identifier        = 1*char
+identifier        =/ quote 1*(unescaped-char / escaped-quote) quote
+escaped-quote     = escape quote
+unescaped-char    = %x30-10FFFF
+escape            = %x5C   ; Back slash: \
+quote             = %x22   ; Double quote: '&quot;'
+char              = %x30-39 / ; 0-9
+                    %x41-5A / ; A-Z
+                    %x5F /    ; _
+                    %x61-7A / ; a-z
+                    %x7F-10FFFF
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functions"><a class="header" href="#functions">Functions</a></h1>
+<ul>
+<li>JEP: 3</li>
+<li>Author: Michael Dowling, James Saryerwinnie</li>
+<li>Created: 2013-11-27</li>
+</ul>
+<h2 id="abstract-1"><a class="header" href="#abstract-1">Abstract</a></h2>
+<p>This document proposes modifying the
+<a href="https://jmespath.org/specification.html#grammar">JMESPath grammar</a>
+to support function expressions.</p>
+<h2 id="motivation-1"><a class="header" href="#motivation-1">Motivation</a></h2>
+<p>Functions allow users to easily transform and filter data in JMESPath
+expressions. As JMESPath is currently implemented, functions would be very
+useful in <code>multi-select-list</code> and <code>multi-select-hash</code> expressions to format
+the output of an expression to contain data that might not have been in the
+original JSON input. Combined with filtered expressions, functions would be a
+powerful mechanism to perform any kind of special comparisons for things like
+<code>length()</code>, <code>contains()</code>, etc.</p>
+<h2 id="data-types"><a class="header" href="#data-types">Data Types</a></h2>
+<p>In order to support functions, a type system is needed.  The JSON types are
+used:</p>
+<ul>
+<li>
+<p>number (integers and double-precision floating-point format in JSON)</p>
+</li>
+<li>
+<p>string</p>
+</li>
+<li>
+<p>boolean (<code>true</code> or <code>false</code>)</p>
+</li>
+<li>
+<p>array (an ordered, sequence of values)</p>
+</li>
+<li>
+<p>object (an unordered collection of key value pairs)</p>
+</li>
+<li>
+<p>null</p>
+</li>
+</ul>
+<h2 id="syntax-changes"><a class="header" href="#syntax-changes">Syntax Changes</a></h2>
+<p>Functions are defined in the <code>function-expression</code> rule below.  A function
+expression is an <code>expression</code> itself, and is valid any place an
+<code>expression</code> is allowed.</p>
+<p>The grammar will require the following grammar additions:</p>
+<pre><code>function-expression = unquoted-string  (
+                        no-args  /
+                        one-or-more-args )
+no-args             = &quot;(&quot; &quot;)&quot;
+one-or-more-args    = &quot;(&quot; ( function-arg *( &quot;,&quot; function-arg ) ) &quot;)&quot;
+function-arg        = expression / number / current-node
+current-node        = &quot;@&quot;
+</code></pre>
+<p><code>expression</code> will need to be updated to add the <code>function-expression</code>
+production:</p>
+<pre><code>expression        = sub-expression / index-expression / or-expression / identifier / &quot;*&quot;
+expression        =/ multi-select-list / multi-select-hash
+expression        =/ literal / function-expression
+</code></pre>
+<p>A function can accept any number of arguments, and each argument can be an
+expression.  Each function must define a signature that specifies the number
+and allowed types of its expected arguments.  Functions can be variadic.</p>
+<h3 id="current-node"><a class="header" href="#current-node">current-node</a></h3>
+<p>The <code>current-node</code> token can be used to represent the current node being
+evaluated. The <code>current-node</code> token is useful for functions that require the
+current node being evaluated as an argument. For example, the following
+expression creates an array containing the total number of elements in the
+<code>foo</code> object followed by the value of <code>foo[&quot;bar&quot;]</code>.</p>
+<pre><code>foo[].[count(@), bar]
+</code></pre>
+<p>JMESPath assumes that all function arguments operate on the current node unless
+the argument is a <code>literal</code> or <code>number</code> token.  Because of this, an
+expression such as <code>@.bar</code> would be equivalent to just <code>bar</code>, so the
+current node is only allowed as a bare expression.</p>
+<h4 id="current-node-state"><a class="header" href="#current-node-state">current-node state</a></h4>
+<p>At the start of an expression, the value of the current node is the data
+being evaluated by the JMESPath expression. As an expression is evaluated, the
+value the the current node represents MUST change to reflect the node currently
+being evaluated. When in a projection, the current node value MUST be changed
+to the node currently being evaluated by the projection.</p>
+<h2 id="function-evaluation"><a class="header" href="#function-evaluation">Function Evaluation</a></h2>
+<p>Functions are evaluated in applicative order.  Each argument must be an
+expression, each argument expression must be evaluated before evaluating the
+function.  The function is then called with the evaluated function arguments.
+The result of the <code>function-expression</code> is the result returned by the
+function call.  If a <code>function-expression</code> is evaluated for a function that
+does not exist, the JMESPath implementation must indicate to the caller that an
+<code>unknown-function</code> error occurred.  How and when this error is raised is
+implementation specific, but implementations should indicate to the caller that
+this specific error occurred.</p>
+<p>Functions can either have a specific arity or be variadic with a minimum
+number of arguments.  If a <code>function-expression</code> is encountered where the
+arity does not match or the minimum number of arguments for a variadic function
+is not provided, then implementations must indicate to the caller than an
+<code>invalid-arity</code> error occurred.  How and when this error is raised is
+implementation specific.</p>
+<p>Each function signature declares the types of its input parameters.  If any
+type constraints are not met, implementations must indicate that an
+<code>invalid-type</code> error occurred.</p>
+<p>In order to accommodate type contraints, functions are provided to convert
+types to other types (<code>to_string</code>, <code>to_number</code>) which are defined below.
+No explicit type conversion happens unless a user specifically uses one of
+these type conversion functions.</p>
+<p>Function expressions are also allowed as the child element of a sub expression.
+This allows functions to be used with projections, which can enable functions
+to be applied to every element in a projection.  For example, given the input
+data of <code>[&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;notanumber&quot;, true]</code>, the following expression can
+be used to convert (and filter) all elements to numbers:</p>
+<pre><code>search([].to_number(@), ``[&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;notanumber&quot;, true]``) -&gt; [1, 2, 3]
+</code></pre>
+<p>This provides a simple mechanism to explicitly convert types when needed.</p>
+<h2 id="built-in-functions"><a class="header" href="#built-in-functions">Built-in Functions</a></h2>
+<p>JMESPath has various built-in functions that operate on different
+data types, documented below.  Each function below has a signature
+that defines the expected types of the input and the type of the returned
+output:</p>
+<pre><code>return_type function_name(type $argname)
+return_type function_name2(type1|type2 $argname)
+</code></pre>
+<p>If a function can accept multiple types for an input value, then the
+multiple types are separated with <code>|</code>.  If the resolved arguments do not
+match the types specified in the signature, an <code>invalid-type</code> error occurs.</p>
+<p>The <code>array</code> type can further specify requirements on the type of the elements
+if they want to enforce homogeneous types.  The subtype is surrounded by
+<code>[type]</code>, for example, the function signature below requires its input
+argument resolves to an array of numbers:</p>
+<pre><code>return_type foo(array[number] $argname)
+</code></pre>
+<p>As a shorthand, the type <code>any</code> is used to indicate that the argument can be
+of any type (<code>array|object|number|string|boolean|null</code>).</p>
+<p>The first function below, <code>abs</code> is discussed in detail to demonstrate the
+above points.  Subsequent function definitions will not include these details
+for brevity, but the same rules apply.</p>
+<p><strong>NOTE</strong>: All string related functions are defined on the basis of Unicode code
+points; they do not take normalization into account.</p>
+<h3 id="abs"><a class="header" href="#abs">abs</a></h3>
+<pre><code>number abs(number $value)
+</code></pre>
+<p>Returns the absolute value of the provided argument.  The signature indicates
+that a number is returned, and that the input argument <code>$value</code> <strong>must</strong>
+resolve to a number, otherwise a <code>invalid-type</code> error is triggered.</p>
+<p>Below is a worked example.  Given:</p>
+<pre><code>{&quot;foo&quot;: -1, &quot;bar&quot;: &quot;2&quot;}
+</code></pre>
+<p>Evaluating <code>abs(foo)</code> works as follows:</p>
+<ol>
+<li>Evaluate the input argument against the current data:</li>
+</ol>
+<pre><code>search(foo, {&quot;foo&quot;: -11, &quot;bar&quot;: 2&quot;}) -&gt; -1
+</code></pre>
+<ol start="2">
+<li>
+<p>Validate the type of the resolved argument.  In this case
+<code>-1</code> is of type <code>number</code> so it passes the type check.</p>
+</li>
+<li>
+<p>Call the function with the resolved argument:</p>
+</li>
+</ol>
+<pre><code>abs(-1) -&gt; 1
+</code></pre>
+<ol start="4">
+<li>
+<p>The value of <code>1</code> is the resolved value of the function expression</p>
+<p><code>abs(foo)</code>.</p>
+</li>
+</ol>
+<p>Below is the same steps for evaluating <code>abs(bar)</code>:</p>
+<ol>
+<li>Evaluate the input argument against the current data:</li>
+</ol>
+<pre><code>search(foo, {&quot;foo&quot;: -1, &quot;bar&quot;: 2&quot;}) -&gt; &quot;2&quot;
+</code></pre>
+<ol start="2">
+<li>Validate the type of the resolved argument.  In this case
+<code>&quot;2</code> is of type <code>string</code> so the immediate indicate that
+an <code>invalid-type</code> error occurred.</li>
+</ol>
+<p>As a final example, here is the steps for evaluating <code>abs(to_number(bar))</code>:</p>
+<ol>
+<li>Evaluate the input argument against the current data:</li>
+</ol>
+<pre><code>search(to_number(bar), {&quot;foo&quot;: -1, &quot;bar&quot;: &quot;2&quot;})
+</code></pre>
+<ol start="2">
+<li>In order to evaluate the above expression, we need to evaluate
+<code>to_number(bar)</code>:</li>
+</ol>
+<pre><code>search(bar, {&quot;foo&quot;: -1, &quot;bar&quot;: &quot;2&quot;}) -&gt; &quot;2&quot;
+# Validate &quot;2&quot; passes the type check for to_number, which it does.
+to_number(&quot;2&quot;) -&gt; 2
+</code></pre>
+<ol start="3">
+<li>Now we can evaluate the original expression:</li>
+</ol>
+<pre><code>search(to_number(bar), {&quot;foo&quot;: -1, &quot;bar&quot;: &quot;2&quot;}) -&gt; 2
+</code></pre>
+<ol start="4">
+<li>Call the function with the final resolved value:</li>
+</ol>
+<pre><code>abs(2) -&gt; 2
+</code></pre>
+<ol start="5">
+<li>The value of <code>2</code> is the resolved value of the function expression
+<code>abs(to_number(bar))</code>.</li>
+</ol>
+<h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>abs(1)</code></td><td>1</td></tr>
+<tr><td><code>abs(-1)</code></td><td>1</td></tr>
+<tr><td><code>abs(`abc`)</code></td><td></td></tr>
+</tbody></table>
+</div>
+<h3 id="avg"><a class="header" href="#avg">avg</a></h3>
+<pre><code>number avg(array[number] $elements)
+</code></pre>
+<p>Returns the average of the elements in the provided array.</p>
+<p>An empty array will produce a return value of null.</p>
+<h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>[10, 15, 20]</code></td><td><code>avg(@)</code></td><td>15</td></tr>
+<tr><td><code>[10, false, 20]</code></td><td><code>avg(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+<tr><td><code>[false]</code></td><td><code>avg(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+<tr><td><code>false</code></td><td><code>avg(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="ceil"><a class="header" href="#ceil">ceil</a></h3>
+<pre><code>number ceil(number $value)
+</code></pre>
+<p>Returns the next highest integer value by rounding up if necessary.</p>
+<h3 id="examples-2"><a class="header" href="#examples-2">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>ceil(`1.001`)</code></td><td>2</td></tr>
+<tr><td><code>ceil(`1.9`)</code></td><td>2</td></tr>
+<tr><td><code>ceil(`1`)</code></td><td>1</td></tr>
+<tr><td><code>ceil(`abc`)</code></td><td><code>null</code></td></tr>
+</tbody></table>
+</div>
+<p>| ### contains</p>
+<pre><code>boolean contains(array|string $subject, array|object|string|number|boolean $search)
+</code></pre>
+<p>Returns <code>true</code> if the given <code>$subject</code> contains the provided <code>$search</code>
+string.</p>
+<p>If <code>$subject</code> is an array, this function returns true if one of the elements
+in the array is equal to the provided <code>$search</code> value.</p>
+<p>If the provided <code>$subject</code> is a string, this function returns true if
+the string contains the provided <code>$search</code> argument.</p>
+<h3 id="examples-3"><a class="header" href="#examples-3">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td>n/a</td><td><code>contains(`foobar`, `foo`)</code></td><td><code>true</code></td></tr>
+<tr><td>n/a</td><td><code>contains(`foobar`, `not`)</code></td><td><code>false</code></td></tr>
+<tr><td>n/a</td><td><code>contains(`foobar`, `bar`)</code></td><td><code>true</code></td></tr>
+<tr><td>n/a</td><td><code>contains(`false`, `bar`)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+<tr><td>n/a</td><td><code>contains(`foobar`, 123)</code></td><td><code>false</code></td></tr>
+<tr><td><code>[&quot;a&quot;, &quot;b&quot;]</code></td><td><code>contains(@, `a`)</code></td><td><code>true</code></td></tr>
+<tr><td><code>[&quot;a&quot;]</code></td><td><code>contains(@, `a\`)</code></td><td><code>true</code></td></tr>
+<tr><td><code>[&quot;a&quot;]</code></td><td><code>contains(@, `b\`)</code></td><td><code>false</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="floor"><a class="header" href="#floor">floor</a></h3>
+<pre><code>number floor(number $value)
+</code></pre>
+<p>Returns the next lowest integer value by rounding down if necessary.</p>
+<h3 id="examples-4"><a class="header" href="#examples-4">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>floor(`1.001\`)</code></td><td>1</td></tr>
+<tr><td><code>floor(`1.9\`)</code></td><td>1</td></tr>
+<tr><td><code>floor(`1\`)</code></td><td>1</td></tr>
+</tbody></table>
+</div>
+<h3 id="join"><a class="header" href="#join">join</a></h3>
+<pre><code>string join(string $glue, array[string] $stringsarray)
+</code></pre>
+<p>Returns all of the elements from the provided <code>$stringsarray</code> array joined
+together using the <code>$glue</code> argument as a separator between each.</p>
+<h3 id="examples-5"><a class="header" href="#examples-5">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>[&quot;a&quot;, &quot;b&quot;]</code></td><td><code>join(`, `, @)</code></td><td>&quot;a, b&quot;</td></tr>
+<tr><td><code>[&quot;a&quot;, &quot;b&quot;]</code></td><td><code>join(``, @) </code></td><td>&quot;ab&quot;</td></tr>
+<tr><td><code>[&quot;a&quot;, false, &quot;b&quot;]</code></td><td><code>join(`, `, @)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+<tr><td><code>[false]</code></td><td><code>join(`, `, @)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="keys"><a class="header" href="#keys">keys</a></h3>
+<pre><code>array keys(object $obj)
+</code></pre>
+<p>Returns an array containing the keys of the provided object.</p>
+<h3 id="examples-6"><a class="header" href="#examples-6">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>{&quot;foo&quot;: &quot;baz&quot;, &quot;bar&quot;: &quot;bam&quot;}</code></td><td><code>keys(@)</code></td><td><code>[&quot;foo&quot;, &quot;bar&quot;]</code></td></tr>
+<tr><td><code>{}</code></td><td><code>keys(@)</code></td><td><code>[]</code></td></tr>
+<tr><td><code>false</code></td><td><code>keys(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+<tr><td><code>[b, a, c]</code></td><td><code>keys(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="length"><a class="header" href="#length">length</a></h3>
+<pre><code>number length(string|array|object $subject)
+</code></pre>
+<p>Returns the length of the given argument using the following types rules:</p>
+<ol>
+<li>
+<p>string: returns the number of code points in the string</p>
+</li>
+<li>
+<p>array: returns the number of elements in the array</p>
+</li>
+<li>
+<p>object: returns the number of key-value pairs in the object</p>
+</li>
+</ol>
+<h3 id="examples-7"><a class="header" href="#examples-7">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td>n/a</td><td><code>length(`abc`)</code></td><td>3</td></tr>
+<tr><td>&quot;current&quot;</td><td><code>length(@)</code></td><td>7</td></tr>
+<tr><td>&quot;current&quot;</td><td><code>length(not_there)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+<tr><td><code>[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</code></td><td><code>length(@)</code></td><td>3</td></tr>
+<tr><td><code>[]</code></td><td><code>length(@)</code></td><td>0</td></tr>
+<tr><td><code>{}</code></td><td><code>length(@)</code></td><td>0</td></tr>
+<tr><td><code>{&quot;foo&quot;: &quot;bar&quot;, &quot;baz&quot;: &quot;bam&quot;}</code></td><td><code>length(@)</code></td><td>2</td></tr>
+</tbody></table>
+</div>
+<h3 id="max"><a class="header" href="#max">max</a></h3>
+<pre><code>number max(array[number] $collection)
+</code></pre>
+<p>Returns the highest found number in the provided array argument.</p>
+<p>An empty array will produce a return value of null.</p>
+<h3 id="examples-8"><a class="header" href="#examples-8">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>[10, 15]</code></td><td><code>max(@)</code></td><td>15</td></tr>
+<tr><td><code>[10, false, 20]</code></td><td><code>max(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="min"><a class="header" href="#min">min</a></h3>
+<pre><code>number min(array[number] $collection)
+</code></pre>
+<p>Returns the lowest found number in the provided <code>$collection</code> argument.</p>
+<h3 id="examples-9"><a class="header" href="#examples-9">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>[10, 15]</code></td><td><code>min(@)</code></td><td>10</td></tr>
+<tr><td><code>[10, false, 20]</code></td><td><code>min(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="sort"><a class="header" href="#sort">sort</a></h3>
+<pre><code>array sort(array $list)
+</code></pre>
+<p>This function accepts an array <code>$list</code> argument and returns the sorted
+elements of the <code>$list</code> as an array.</p>
+<p>The array must be a list of strings or numbers.  Sorting strings is based on
+code points.  Locale is not taken into account.</p>
+<h3 id="examples-10"><a class="header" href="#examples-10">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>[b, a, c]</code></td><td><code>sort(@)</code></td><td><code>[a, b, c]</code></td></tr>
+<tr><td><code>[1, a, c]</code></td><td><code>sort(@)</code></td><td><code>[1, a, c]</code></td></tr>
+<tr><td><code>[false, [], null]</code></td><td><code>sort(@)</code></td><td><code>[[], null, false]</code></td></tr>
+<tr><td><code>[[], {}, false]</code></td><td><code>sort(@)</code></td><td><code>[{}, [], false]</code></td></tr>
+<tr><td><code>{&quot;a&quot;: 1, &quot;b&quot;: 2}</code></td><td><code>sort(@)</code></td><td><code>null</code></td></tr>
+<tr><td><code>false</code></td><td><code>sort(@)</code></td><td><code>null</code></td></tr>
+<tr><td></td><td></td><td></td></tr>
+</tbody></table>
+</div>
+<h3 id="to_string"><a class="header" href="#to_string">to_string</a></h3>
+<pre><code>string to_string(string|number|array|object|boolean $arg)
+</code></pre>
+<ul>
+<li>
+<p>string - Returns the passed in value.</p>
+</li>
+<li>
+<p>number/array/object/boolean - The JSON encoded value of the object.  The
+JSON encoder should emit the encoded JSON value without adding any additional
+new lines.</p>
+</li>
+</ul>
+<h3 id="examples-11"><a class="header" href="#examples-11">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>null</code></td><td><code>to_string(`2`)</code></td><td><code>&quot;2&quot;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="to_number"><a class="header" href="#to_number">to_number</a></h3>
+<pre><code>number to_number(string|number $arg)
+</code></pre>
+<ul>
+<li>
+<p>string - Returns the parsed number.  Any string that conforms to the
+<code>json-number</code> production is supported.</p>
+</li>
+<li>
+<p>number - Returns the passed in value.</p>
+</li>
+<li>
+<p>array - null</p>
+</li>
+<li>
+<p>object - null</p>
+</li>
+<li>
+<p>boolean - null</p>
+</li>
+</ul>
+<h3 id="type"><a class="header" href="#type">type</a></h3>
+<pre><code>string type(array|object|string|number|boolean|null $subject)
+</code></pre>
+<p>Returns the JavaScript type of the given <code>$subject</code> argument as a string
+value.</p>
+<p>The return value MUST be one of the following:</p>
+<ul>
+<li>number</li>
+<li>string</li>
+<li>boolean</li>
+<li>array</li>
+<li>object</li>
+<li>null</li>
+</ul>
+<h3 id="examples-12"><a class="header" href="#examples-12">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td>&quot;foo&quot;</td><td><code>type(@)</code></td><td>&quot;string&quot;</td></tr>
+<tr><td><code>true</code></td><td><code>type(@)</code></td><td>&quot;boolean&quot;</td></tr>
+<tr><td><code>false</code></td><td><code>type(@)</code></td><td>&quot;boolean&quot;</td></tr>
+<tr><td><code>null</code></td><td><code>type(@)</code></td><td>&quot;null&quot;</td></tr>
+<tr><td>123</td><td><code>type(@)</code></td><td>number</td></tr>
+<tr><td>123.05</td><td><code>type(@)</code></td><td>number</td></tr>
+<tr><td><code>[&quot;abc&quot;]</code></td><td><code>type(@)</code></td><td>&quot;array&quot;</td></tr>
+<tr><td><code>{&quot;abc&quot;: &quot;123&quot;}</code></td><td><code>type(@)</code></td><td>&quot;object&quot;</td></tr>
+</tbody></table>
+</div>
+<h3 id="values"><a class="header" href="#values">values</a></h3>
+<pre><code>array values(object $obj)
+</code></pre>
+<p>Returns the values of the provided object.</p>
+<h3 id="examples-13"><a class="header" href="#examples-13">Examples</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Given</th><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>{&quot;foo&quot;: &quot;baz&quot;, &quot;bar&quot;: &quot;bam&quot;}</code></td><td><code>values(@)</code></td><td><code>[&quot;baz&quot;, &quot;bam&quot;]</code></td></tr>
+<tr><td><code>[&quot;a&quot;, &quot;b&quot;]</code></td><td><code>values(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+<tr><td><code>false</code></td><td><code>values(@)</code></td><td><code>&lt;error: invalid-type&gt;</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="compliance-tests"><a class="header" href="#compliance-tests">Compliance Tests</a></h2>
+<p>A <code>functions.json</code> will be added to the compliance test suite.
+The test suite will add the following new error types:</p>
+<ul>
+<li>unknown-function</li>
+<li>invalid-arity</li>
+<li>invalid-type</li>
+</ul>
+<p>The compliance does not specify <strong>when</strong> the errors are raised, as this will
+depend on implementation details.  For an implementation to be compliant they
+need to indicate that an error occurred while attempting to evaluate the
+JMESPath expression.</p>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>
+<p>This JEP originally proposed the literal syntax. The literal portion of this
+JEP was removed and added instead to JEP 7.</p>
+</li>
+<li>
+<p>This JEP originally specified that types matches should return null.  This
+has been updated to specify that an invalid type error should occur instead.</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="pipe-expressions"><a class="header" href="#pipe-expressions">Pipe Expressions</a></h1>
+<ul>
+<li>JEP: 4</li>
+<li>Author: Michael Dowling</li>
+<li>Created: 2013-12-07</li>
+</ul>
+<h2 id="abstract-2"><a class="header" href="#abstract-2">Abstract</a></h2>
+<p>This document proposes adding support for piping expressions into subsequent
+expressions.</p>
+<h2 id="motivation-2"><a class="header" href="#motivation-2">Motivation</a></h2>
+<p>The current JMESPath grammar allows for projections at various points in an
+expression. However, it is not currently possible to operate on the result of
+a projection as a list.</p>
+<p>The following example illustrates that it is not possible to operate on the
+result of a projection (e.g., take the first match of a projection).</p>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;a&quot;: {
+            &quot;bar&quot;: [1, 2, 3]
+        },
+        &quot;b&quot;: {
+            &quot;bar&quot;: [4, 5, 6]
+        }
+    }
+}
+</code></pre>
+<p>Expression:</p>
+<pre><code>foo.*.bar[0]
+</code></pre>
+<p>The result would be element 0 of each <code>bar</code>:</p>
+<pre><code class="language-json">[1, 4]
+</code></pre>
+<p>With the addition of filters, we could pass the result of one expression to
+another, operating on the result of a projection (or any expression).</p>
+<p>Expression:</p>
+<pre><code>foo.*.bar | [0]
+</code></pre>
+<p>Result:</p>
+<pre><code class="language-json">[1, 2, 3]
+</code></pre>
+<p>Not only does this give us the ability to operate on the result of a
+projection, but pipe expressions can also be useful for breaking down a complex
+expression into smaller, easier to comprehend, parts.</p>
+<h2 id="modified-grammar-1"><a class="header" href="#modified-grammar-1">Modified Grammar</a></h2>
+<p>The following modified JMESPath grammar supports piped expressions.</p>
+<pre><code>expression        = sub-expression / index-expression / or-expression / identifier / &quot;*&quot;
+expression        =/ multi-select-list / multi-select-hash / pipe-expression
+sub-expression    = expression &quot;.&quot; expression
+pipe-expression   = expression &quot;|&quot; expression
+or-expression     = expression &quot;||&quot; expression
+index-expression  = expression bracket-specifier / bracket-specifier
+multi-select-list = &quot;[&quot; ( expression *( &quot;,&quot; expression ) ) &quot;]&quot;
+multi-select-hash = &quot;{&quot; ( keyval-expr *( &quot;,&quot; keyval-expr ) ) &quot;}&quot;
+keyval-expr       = identifier &quot;:&quot; expression
+bracket-specifier = &quot;[&quot; (number / &quot;*&quot;) &quot;]&quot; / &quot;[]&quot;
+number            = [-]1*digit
+digit             = &quot;1&quot; / &quot;2&quot; / &quot;3&quot; / &quot;4&quot; / &quot;5&quot; / &quot;6&quot; / &quot;7&quot; / &quot;8&quot; / &quot;9&quot; / &quot;0&quot;
+identifier        = 1*char
+identifier        =/ quote 1*(unescaped-char / escaped-quote) quote
+escaped-quote     = escape quote
+unescaped-char    = %x30-10FFFF
+escape            = %x5C   ; Back slash: \
+quote             = %x22   ; Double quote: '&quot;'
+char              = %x30-39 / ; 0-9
+                    %x41-5A / ; A-Z
+                    %x5F /    ; _
+                    %x61-7A / ; a-z
+                    %x7F-10FFFF
+</code></pre>
+<p><strong>NOTE</strong>: <code>pipe-expression</code> has a higher precendent than the <code>or-operator</code></p>
+<h2 id="compliance-tests-1"><a class="header" href="#compliance-tests-1">Compliance Tests</a></h2>
+<pre><code class="language-json">[{
+  &quot;given&quot;: {
+    &quot;foo&quot;: {
+      &quot;bar&quot;: {
+        &quot;baz&quot;: &quot;one&quot;
+      },
+      &quot;other&quot;: {
+        &quot;baz&quot;: &quot;two&quot;
+      },
+      &quot;other2&quot;: {
+        &quot;baz&quot;: &quot;three&quot;
+      },
+      &quot;other3&quot;: {
+        &quot;notbaz&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]
+      },
+      &quot;other4&quot;: {
+        &quot;notbaz&quot;: [&quot;d&quot;, &quot;e&quot;, &quot;f&quot;]
+      }
+    }
+  },
+  &quot;cases&quot;: [
+    {
+      &quot;expression&quot;: &quot;foo.*.baz | [0]&quot;,
+      &quot;result&quot;: &quot;one&quot;
+    },
+    {
+      &quot;expression&quot;: &quot;foo.*.baz | [1]&quot;,
+      &quot;result&quot;: &quot;two&quot;
+    },
+    {
+      &quot;expression&quot;: &quot;foo.*.baz | [2]&quot;,
+      &quot;result&quot;: &quot;three&quot;
+    },
+    {
+      &quot;expression&quot;: &quot;foo.bar.* | [0]&quot;,
+      &quot;result&quot;: &quot;one&quot;
+    },
+    {
+      &quot;expression&quot;: &quot;foo.*.notbaz | [*]&quot;,
+      &quot;result&quot;: [[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;], [&quot;d&quot;, &quot;e&quot;, &quot;f&quot;]]
+    },
+    {
+      &quot;expression&quot;: &quot;foo | bar&quot;,
+      &quot;result&quot;: {&quot;baz&quot;: &quot;one&quot;}
+    },
+    {
+      &quot;expression&quot;: &quot;foo | bar | baz&quot;,
+      &quot;result&quot;: &quot;one&quot;
+    },
+    {
+      &quot;expression&quot;: &quot;foo|bar| baz&quot;,
+      &quot;result&quot;: &quot;one&quot;
+    },
+    {
+      &quot;expression&quot;: &quot;not_there | [0]&quot;,
+      &quot;result&quot;: null
+    },
+    {
+      &quot;expression&quot;: &quot;not_there | [0]&quot;,
+      &quot;result&quot;: null
+    },
+    {
+      &quot;expression&quot;: &quot;[foo.bar, foo.other] | [0]&quot;,
+      &quot;result&quot;: {&quot;baz&quot;: &quot;one&quot;}
+    },
+    {
+      &quot;expression&quot;: &quot;{\&quot;a\&quot;: foo.bar, \&quot;b\&quot;: foo.other} | a&quot;,
+      &quot;result&quot;: {&quot;baz&quot;: &quot;one&quot;}
+    },
+    {
+      &quot;expression&quot;: &quot;{\&quot;a\&quot;: foo.bar, \&quot;b\&quot;: foo.other} | b&quot;,
+      &quot;result&quot;: {&quot;baz&quot;: &quot;two&quot;}
+    },
+    {
+      &quot;expression&quot;: &quot;{\&quot;a\&quot;: foo.bar, \&quot;b\&quot;: foo.other} | *.baz&quot;,
+      &quot;result&quot;: [&quot;one&quot;, &quot;two&quot;]
+    },
+    {
+      &quot;expression&quot;: &quot;foo.bam || foo.bar | baz&quot;,
+      &quot;result&quot;: &quot;one&quot;
+    },
+    {
+      &quot;expression&quot;: &quot;foo | not_there || bar&quot;,
+      &quot;result&quot;: {&quot;baz&quot;: &quot;one&quot;}
+    }
+  ]
+}]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="array-slice-expressions"><a class="header" href="#array-slice-expressions">Array Slice Expressions</a></h1>
+<ul>
+<li>JEP: 5</li>
+<li>Author: Michael Dowling</li>
+<li>Created: 2013-12-08</li>
+</ul>
+<h2 id="abstract-3"><a class="header" href="#abstract-3">Abstract</a></h2>
+<p>This document proposes modifying the JMESPath grammar to support array slicing
+for accessing specific portions of an array.</p>
+<h2 id="motivation-3"><a class="header" href="#motivation-3">Motivation</a></h2>
+<p>The current JMESPath grammar does not allow plucking out specific portions of
+an array.</p>
+<p>The following examples are possible with array slicing notation utilizing an
+optional start position, optional stop position, and optional step that can be
+less than or greater than 0:</p>
+<ol>
+<li>
+<p>Extracting every N indices (e.g., only even <code>[::2]</code>, only odd <code>[1::2]</code>,
+etc)</p>
+</li>
+<li>
+<p>Extracting only elements after a given start position: <code>[2:]</code></p>
+</li>
+<li>
+<p>Extracting only elements before a given stop position: <code>[:5]</code></p>
+</li>
+<li>
+<p>Extracting elements between a given start and end position: <code>[2::5]</code></p>
+</li>
+<li>
+<p>Only the last 5 elements: <code>[-5:]</code></p>
+</li>
+<li>
+<p>The last five elements in reverse order: <code>[:-5:-1]</code></p>
+</li>
+<li>
+<p>Reversing the order of an array: <code>[::-1]</code></p>
+</li>
+</ol>
+<h2 id="syntax"><a class="header" href="#syntax">Syntax</a></h2>
+<p>This syntax introduces Python style array slicing that allows a start position,
+stop position, and step.  This syntax also proposes following the same
+semantics as python slices.</p>
+<pre><code>[start:stop:step]
+</code></pre>
+<p>Each part of the expression is optional. You can omit the start position, stop
+position, or step. No more than three values can be provided in a slice
+expression.</p>
+<p>The step value determines how my indices to skip after each element is plucked
+from the array. A step of 1 (the default step) will not skip any indices. A
+step value of 2 will skip every other index while plucking values from an
+array. A step value of -1 will extract values in reverse order from the array.
+A step value of -2 will extract values in reverse order from the array while,
+skipping every other index.</p>
+<p>Slice expressions adhere to the following rules:</p>
+<ol>
+<li>
+<p>If a negative start position is given, it is calculated as the total length
+of the array plus the given start position.</p>
+</li>
+<li>
+<p>If no start position is given, it is assumed to be 0 if the given step is
+greater than 0 or the end of the array if the given step is less than 0.</p>
+</li>
+<li>
+<p>If a negative stop position is given, it is calculated as the total length
+of the array plus the given stop position.</p>
+</li>
+<li>
+<p>If no stop position is given, it is assumed to be the length of the array if
+the given step is greater than 0 or 0 if the given step is less than 0.</p>
+</li>
+<li>
+<p>If the given step is omitted, it it assumed to be 1.</p>
+</li>
+<li>
+<p>If the given step is 0, an error must be raised.</p>
+</li>
+<li>
+<p>If the element being sliced is not an array, the result must be <code>null</code>.</p>
+</li>
+<li>
+<p>If the element being sliced is an array and yields no results, the result
+must be an empty array.</p>
+</li>
+</ol>
+<h2 id="modified-grammar-2"><a class="header" href="#modified-grammar-2">Modified Grammar</a></h2>
+<p>The following modified JMESPath grammar supports array slicing.</p>
+<pre><code>expression        = sub-expression / index-expression / or-expression / identifier / &quot;*&quot;
+expression        =/ multi-select-list / multi-select-hash
+sub-expression    = expression &quot;.&quot; expression
+or-expression     = expression &quot;||&quot; expression
+index-expression  = expression bracket-specifier / bracket-specifier
+multi-select-list = &quot;[&quot; ( expression *( &quot;,&quot; expression ) ) &quot;]&quot;
+multi-select-hash = &quot;{&quot; ( keyval-expr *( &quot;,&quot; keyval-expr ) ) &quot;}&quot;
+keyval-expr       = identifier &quot;:&quot; expression
+bracket-specifier = &quot;[&quot; (number / &quot;*&quot; / slice-expression) &quot;]&quot; / &quot;[]&quot;
+slice-expression  = &quot;:&quot;
+slice-expression  =/ number &quot;:&quot; number &quot;:&quot; number
+slice-expression  =/ number &quot;:&quot;
+slice-expression  =/ number &quot;:&quot; &quot;:&quot; number
+slice-expression  =/ &quot;:&quot; number
+slice-expression  =/ &quot;:&quot; number &quot;:&quot; number
+slice-expression  =/ &quot;:&quot; &quot;:&quot; number
+number            = [-]1*digit
+digit             = &quot;1&quot; / &quot;2&quot; / &quot;3&quot; / &quot;4&quot; / &quot;5&quot; / &quot;6&quot; / &quot;7&quot; / &quot;8&quot; / &quot;9&quot; / &quot;0&quot;
+identifier        = 1*char
+identifier        =/ quote 1*(unescaped-char / escaped-quote) quote
+escaped-quote     = escape quote
+unescaped-char    = %x30-10FFFF
+escape            = %x5C   ; Back slash: \
+quote             = %x22   ; Double quote: '&quot;'
+char              = %x30-39 / ; 0-9
+                    %x41-5A / ; A-Z
+                    %x5F /    ; _
+                    %x61-7A / ; a-z
+                    %x7F-10FFFF
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="improved-identifiers"><a class="header" href="#improved-identifiers">Improved Identifiers</a></h1>
+<ul>
+<li>JEP: 6</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2013-12-14</li>
+</ul>
+<h2 id="abstract-4"><a class="header" href="#abstract-4">Abstract</a></h2>
+<p>This JEP proposes grammar modifications to JMESPath in order to improve
+identifiers used in JMESPath.  In doing so, several inconsistencies in the
+identifier grammar rules will be fixed, along with an improved grammar for
+specifying unicode identifiers in a way that is consistent with JSON
+strings.</p>
+<h2 id="motivation-4"><a class="header" href="#motivation-4">Motivation</a></h2>
+<p>There are two ways to currently specify an identifier, the unquoted rule:</p>
+<pre><code>identifier        = 1*char
+</code></pre>
+<p>and the quoted rule:</p>
+<pre><code>identifier        =/ quote 1*(unescaped-char / escaped-quote) quote
+</code></pre>
+<p>The <code>char</code> rule contains a set of characters that do <strong>not</strong> have to be
+quoted:</p>
+<pre><code>char              = %x30-39 / ; 0-9
+                    %x41-5A / ; A-Z
+                    %x5F /    ; _
+                    %x61-7A / ; a-z
+                    %x7F-10FFFF
+</code></pre>
+<p>There is an ambiguity between the <code>%x30-39</code> rule and the <code>number</code> rule:</p>
+<pre><code>number            = [&quot;-&quot;]1*digit
+digit             = &quot;1&quot; / &quot;2&quot; / &quot;3&quot; / &quot;4&quot; / &quot;5&quot; / &quot;6&quot; / &quot;7&quot; / &quot;8&quot; / &quot;9&quot; / &quot;0&quot;
+</code></pre>
+<p>It’s ambiguous which rule to use.  Given a string “123”, it’s not clear whether
+this should be parsed as an identifier or a number. Existing implementations
+<strong>aren’t</strong> following this rule (because it’s ambiguous) so the grammar should
+be updated to remove the ambiguity, specifically, an unquoted identifier can
+only start with the characters <code>[a-zA-Z_]</code>.</p>
+<h3 id="unicode"><a class="header" href="#unicode">Unicode</a></h3>
+<p>JMESPath supports unicode through the <code>char</code>  and <code>unescaped-char</code> rule:</p>
+<pre><code>unescaped-char    = %x30-10FFFF
+char              = %x30-39 / ; 0-9
+                    %x41-5A / ; A-Z
+                    %x5F /    ; _
+                    %x61-7A / ; a-z
+                    %x7F-10FFFF
+</code></pre>
+<p>However, JSON supports a syntax for escaping unicode characters.  Any
+character in the Basic Multilingual Plane (BMP) can be escaped with:</p>
+<pre><code>char = escape (%x75 4HEXDIG )  ; \uXXXX
+</code></pre>
+<p>Similar to the way that XPath supports numeric character references used
+in XML (<code>&amp;#nnnn</code>), JMESPath should support the same escape sequences
+used in JSON.  JSON also supports a 12 character escape sequence for
+characters outside of the BMP, by encoding the UTF-16 surrogate pair.
+For example, the code point <code>U+1D11E</code> can be represented
+as <code>&quot;\\uD834\\uDD1E&quot;</code>.</p>
+<h3 id="escape-sequences"><a class="header" href="#escape-sequences">Escape Sequences</a></h3>
+<p>Consider the following JSON object:</p>
+<pre><code>{&quot;foo\nbar&quot;: &quot;baz&quot;}
+</code></pre>
+<p>A JMESPath expression should be able to retrieve the value of baz.  With
+the current grammar, one must rely on the environment’s ability to input
+control characters such as the newline (<code>%x0A</code>).  This can be problematic
+in certain environments.  For example, in python, this is not a problem:</p>
+<pre><code>&gt;&gt;&gt; jmespath_expression = &quot;foo\nbar&quot;
+</code></pre>
+<p>Python will interpret the sequence <code>&quot;\\n&quot;</code> (<code>%x5C %x6E</code>) as the newline
+character <code>%x0A</code>.  However, consider Bash:</p>
+<pre><code>$ foo --jmespath-expression &quot;foo\nbar&quot;
+</code></pre>
+<p>In this situation, bash will not interpret the <code>&quot;\\n&quot;</code> (<code>%x5C %x6E</code>)
+sequence.</p>
+<h2 id="specification"><a class="header" href="#specification">Specification</a></h2>
+<p>The <code>char</code> rule contains a set of characters that do <strong>not</strong> have to be
+quoted.  The new set of characters that do not have to quoted will be:</p>
+<pre><code>unquoted-string   = (%x41-5A / %x61-7A / %x5F) *(%x30-39 / %x41-5A / %x5F / %x61-7A)
+</code></pre>
+<p>In order for an identifier to not be quoted, it must start with <code>[A-Za-z_]</code>,
+then must be followed by zero or more <code>[0-9A-Za-z_]</code>.</p>
+<p>The unquoted rule is updated to account for all JSON supported escape
+sequences:</p>
+<pre><code>quoted-string     =/ quote 1*(unescaped-char / escaped-char) quote
+</code></pre>
+<p>The full rule for an identifier is:</p>
+<pre><code>identifier        = unquoted-string / quoted-string
+unquoted-string   = (%x41-5A / %x61-7A / %x5F) *(  ; a-zA-Z_
+                        %x30-39  /  ; 0-9
+                        %x41-5A /  ; A-Z
+                        %x5F    /  ; _
+                        %x61-7A)   ; a-z
+quoted-string     = quote 1*(unescaped-char / escaped-char) quote
+unescaped-char    = %x20-21 / %x23-5B / %x5D-10FFFF
+escape            = %x5C   ; Back slash: \
+quote             = %x22   ; Double quote: '&quot;'
+escaped-char      = escape (
+                        %x22 /          ; &quot;    quotation mark  U+0022
+                        %x5C /          ; \    reverse solidus U+005C
+                        %x2F /          ; /    solidus         U+002F
+                        %x62 /          ; b    backspace       U+0008
+                        %x66 /          ; f    form feed       U+000C
+                        %x6E /          ; n    line feed       U+000A
+                        %x72 /          ; r    carriage return U+000D
+                        %x74 /          ; t    tab             U+0009
+                        %x75 4HEXDIG )  ; uXXXX                U+XXXX
+</code></pre>
+<h2 id="rationale"><a class="header" href="#rationale">Rationale</a></h2>
+<p>Adopting the same string rules as JSON strings will allow users familiar with
+JSON semantics to understand how JMESPath identifiers will work.</p>
+<p>This change also provides a nice consistency for the literal syntax proposed
+in JEP 3.  With this model, the supported literal strings can be the same
+as quoted identifiers.</p>
+<p>This also will allow the grammar to grow in a consistent way if JMESPath
+adds support for filtering based on literal values.  For example (note that
+this is just a suggested syntax, not a formal proposal), given the data:</p>
+<pre><code>{&quot;foo&quot;: [{&quot;✓&quot;: &quot;✓&quot;}, {&quot;✓&quot;: &quot;✗&quot;}]}
+</code></pre>
+<p>You can now have the following JMESPath expressions:</p>
+<pre><code>foo[?&quot;✓&quot; = `✓`]
+foo[?&quot;\u2713&quot; = `\u2713`]
+</code></pre>
+<p>As a general property, any supported JSON string is now a supported quoted
+identifier.</p>
+<h2 id="impact"><a class="header" href="#impact">Impact</a></h2>
+<p>For any implementation that was parsing digits as an identifier, identifiers
+starting with digits will no longer be valid, e.g. <code>foo.0.1.2</code>.</p>
+<p>There are several compliance tests that will have to be updated as a result
+of this JEP.  They were arguably wrong to begin with.</p>
+<h3 id="basicjson"><a class="header" href="#basicjson">basic.json</a></h3>
+<p>The following needs to be changed because identifiers starting
+with a number must now be quoted:</p>
+<pre><code>-            &quot;expression&quot;: &quot;foo.1&quot;,
++            &quot;expression&quot;: &quot;foo.\&quot;1\&quot;&quot;,
+             &quot;result&quot;: [&quot;one&quot;, &quot;two&quot;, &quot;three&quot;]
+          },
+          {
+-            &quot;expression&quot;: &quot;foo.1[0]&quot;,
++            &quot;expression&quot;: &quot;foo.\&quot;1\&quot;[0]&quot;,
+             &quot;result&quot;: &quot;one&quot;
+          },
+</code></pre>
+<p>Similarly, the following needs to be changed because an unquoted
+identifier cannot start with <code>-</code>:</p>
+<pre><code>-            &quot;expression&quot;: &quot;foo.-1&quot;,
++            &quot;expression&quot;: &quot;foo.\&quot;-1\&quot;&quot;,
+             &quot;result&quot;: &quot;bar&quot;
+          }
+</code></pre>
+<h3 id="escapejson"><a class="header" href="#escapejson">escape.json</a></h3>
+<p>The escape.json has several more interseting cases that need to be updated.
+This has to do with the updated escaping rules.  Each one will be explained.</p>
+<pre><code>-            &quot;expression&quot;: &quot;\&quot;foo\nbar\&quot;&quot;,
++            &quot;expression&quot;: &quot;\&quot;foo\\nbar\&quot;&quot;,
+             &quot;result&quot;: &quot;newline&quot;
+          },
+</code></pre>
+<p>This has to be updated because a JSON parser will interpret the <code>\\n</code> sequence
+as the newline character.  The newline character is <strong>not</strong> allowed in a
+JMESPath identifier (note that the newline character <code>%0A</code> is not in any
+rule).  In order for a JSON parser to create a sequence of <code>%x5C %x6E</code>, the
+JSON string must be <code>\\\\n</code> (<code>%x5C %x5C %x6E</code>).</p>
+<pre><code>-            &quot;expression&quot;: &quot;\&quot;c:\\\\windows\\path\&quot;&quot;,
++            &quot;expression&quot;: &quot;\&quot;c:\\\\\\\\windows\\\\path\&quot;&quot;,
+             &quot;result&quot;: &quot;windows&quot;
+          },
+</code></pre>
+<p>The above example is a more pathological case of escaping.  In this example, we
+have a string that represents a windows path “c:\windowpath”.  There are two
+levels of escaping happening here, one at the JSON parser, and one at the
+JMESPath parser.  The JSON parser will take the sequence
+<code>&quot;\\&quot;c:\\\\\\\\\\\\\\\\windows\\\\\\\\path\\&quot;&quot;</code> and create the string
+<code>&quot;\\&quot;c:\\\\\\\\windows\\\\path\\&quot;&quot;</code>.  The JMESPath parser will take the string
+<code>&quot;\\&quot;c:\\\\\\\\windows\\\\path\\&quot;'</code> and, applying its own escaping rules, will
+look for a key named <code>c:\\\\windows\\path</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="filter-expressions"><a class="header" href="#filter-expressions">Filter Expressions</a></h1>
+<ul>
+<li>JEP: 7</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2013-12-16</li>
+</ul>
+<h2 id="abstract-5"><a class="header" href="#abstract-5">Abstract</a></h2>
+<p>This JEP proposes grammar modifications to JMESPath to allow for filter
+expressions.  A filtered expression allows list elements to be selected
+based on matching expressions.  A literal expression
+is also introduced (from JEP 3) so that it is possible to match elements
+against literal values.</p>
+<h2 id="motivation-5"><a class="header" href="#motivation-5">Motivation</a></h2>
+<p>A common request when querying JSON objects is the ability to select
+elements based on a specific value.  For example, given a JSON object:</p>
+<pre><code>{&quot;foo&quot;: [{&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 1},
+         {&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 2},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 3},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 4}]}
+</code></pre>
+<p>A user may want to select all objects in the <code>foo</code> list that have
+a <code>state</code> key of <code>WA</code>.  There is currently no way to do this
+in JMESPath.  This JEP will introduce a syntax that allows this:</p>
+<pre><code>foo[?state == `WA`]
+</code></pre>
+<p>Additionally, a user may want to project additional expressions onto the values
+matched from a filter expression.  For example, given the data above, select
+the <code>value</code> key from all objects that have a <code>state</code> of <code>WA</code>:</p>
+<pre><code>foo[?state == `WA`].value
+</code></pre>
+<p>would return <code>[1, 2]</code>.</p>
+<h2 id="specification-1"><a class="header" href="#specification-1">Specification</a></h2>
+<p>The updated grammar for filter expressions:</p>
+<pre><code>bracket-specifier      = &quot;[&quot; (number / &quot;*&quot;) &quot;]&quot; / &quot;[]&quot;
+bracket-specifier      =/ &quot;[?&quot; list-filter-expression &quot;]&quot;
+list-filter-expression = expression comparator expression
+comparator             = &quot;&lt;&quot; / &quot;&lt;=&quot; / &quot;==&quot; / &quot;&gt;=&quot; / &quot;&gt;&quot; / &quot;!=&quot;
+expression             =/ literal
+literal                = &quot;`&quot; json-value &quot;`&quot;
+literal                =/ &quot;`&quot; 1*(unescaped-literal / escaped-literal) &quot;`&quot;
+unescaped-literal      = %x20-21 /       ; space !
+                            %x23-5A /   ; # - [
+                            %x5D-5F /   ; ] ^ _
+                            %x61-7A     ; a-z
+                            %x7C-10FFFF ; |}~ ...
+escaped-literal        = escaped-char / (escape %x60)
+</code></pre>
+<p>The <code>json-value</code> rule is any valid json value.  While it’s recommended
+that implementations use an existing JSON parser to parse the
+<code>json-value</code>, the grammar is added below for completeness:</p>
+<pre><code>json-value = &quot;false&quot; / &quot;null&quot; / &quot;true&quot; / json-object / json-array /
+             json-number / json-quoted-string
+json-quoted-string = %x22 1*(unescaped-literal / escaped-literal) %x22
+begin-array     = ws %x5B ws  ; [ left square bracket
+begin-object    = ws %x7B ws  ; { left curly bracket
+end-array       = ws %x5D ws  ; ] right square bracket
+end-object      = ws %x7D ws  ; } right curly bracket
+name-separator  = ws %x3A ws  ; : colon
+value-separator = ws %x2C ws  ; , comma
+ws              = *(%x20 /              ; Space
+                    %x09 /              ; Horizontal tab
+                    %x0A /              ; Line feed or New line
+                    %x0D                ; Carriage return
+                   )
+json-object = begin-object [ member *( value-separator member ) ] end-object
+member = quoted-string name-separator json-value
+json-array = begin-array [ json-value *( value-separator json-value ) ] end-array
+json-number = [ minus ] int [ frac ] [ exp ]
+decimal-point = %x2E       ; .
+digit1-9 = %x31-39         ; 1-9
+e = %x65 / %x45            ; e E
+exp = e [ minus / plus ] 1*DIGIT
+frac = decimal-point 1*DIGIT
+int = zero / ( digit1-9 *DIGIT )
+minus = %x2D               ; -
+plus = %x2B                ; +
+zero = %x30                ; 0
+</code></pre>
+<h3 id="comparison-operators"><a class="header" href="#comparison-operators">Comparison Operators</a></h3>
+<p>The following operations are supported:</p>
+<ul>
+<li>
+<p><code>==</code>, tests for equality.</p>
+</li>
+<li>
+<p><code>!=</code>, tests for inequality.</p>
+</li>
+<li>
+<p><code>&lt;</code>, less than.</p>
+</li>
+<li>
+<p><code>&lt;=</code>, less than or equal to.</p>
+</li>
+<li>
+<p><code>&gt;</code>, greater than.</p>
+</li>
+<li>
+<p><code>&gt;=</code>, greater than or equal to.</p>
+</li>
+</ul>
+<p>The behavior of each operation is dependent on the type of each evaluated
+expression.</p>
+<p>The comparison semantics for each operator are defined below based on
+the corresponding JSON type:</p>
+<h4 id="equality-operators"><a class="header" href="#equality-operators">Equality Operators</a></h4>
+<p>For <code>string/number/true/false/null</code> types, equality is an exact match. A
+<code>string</code> is equal to another <code>string</code> if they they have the exact sequence
+of code points.  The literal values <code>true/false/null</code> are only equal to their
+own literal values.  Two JSON objects are equal if they have the same set
+of keys (for each key in the first JSON object there exists a key with equal
+value in the second JSON object).  Two JSON arrays are equal if they have
+equal elements in the same order (given two arrays <code>x</code> and <code>y</code>,
+for each <code>i</code> in <code>x</code>, <code>x[i] == y[i]</code>).</p>
+<h4 id="ordering-operators"><a class="header" href="#ordering-operators">Ordering Operators</a></h4>
+<p>Ordering operators <code>&gt;, &gt;=, &lt;, &lt;=</code> are <strong>only</strong> valid for numbers.
+Evaluating any other type with a comparison operator will yield a <code>null</code>
+value, which will result in the element being excluded from the result list.
+For example, given:</p>
+<pre><code>search('foo[?a&lt;b]', {&quot;foo&quot;: [{&quot;a&quot;: &quot;char&quot;, &quot;b&quot;: &quot;char&quot;},
+                             {&quot;a&quot;: 2, &quot;b&quot;: 1},
+                             {&quot;a&quot;: 1, &quot;b&quot;: 2}]})
+</code></pre>
+<p>The three elements in the foo list are evaluated against <code>a &lt; b</code>.  The first
+element resolves to the comparison <code>&quot;char&quot; &lt; &quot;bar&quot;</code>, and because these types
+are string, the expression results in <code>null</code>, so the first element is not
+included in the result list.  The second element resolves to <code>2 &lt; 1</code>,
+which is <code>false</code>, so the second element is excluded from the result list.
+The third expression resolves to <code>1 &lt; 2</code> which evalutes to <code>true</code>, so the
+third element is included in the list.  The final result of that expression
+is <code>[{&quot;a&quot;: 1, &quot;b&quot;: 2}]</code>.</p>
+<h3 id="filtering-semantics"><a class="header" href="#filtering-semantics">Filtering Semantics</a></h3>
+<p>When a filter expression is matched, the matched element in its entirety is
+included in the filtered response.</p>
+<p>Using the previous example, given the following data:</p>
+<pre><code>{&quot;foo&quot;: [{&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 1},
+         {&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 2},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 3},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 4}]}
+</code></pre>
+<p>The expression <code>foo[?state == \</code>WA`]` will return the following value:</p>
+<pre><code>[{&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 1}]
+</code></pre>
+<h3 id="literal-expressions"><a class="header" href="#literal-expressions">Literal Expressions</a></h3>
+<p>Literal expressions are also added in the JEP, which is essentially a JSON
+value surrounded by the “`” character.  You can escape the “`” character via
+“`”, and if the character “`” appears in the JSON value, it must also be
+escaped.  A simple two pass algorithm in the lexer could first process any
+escaped “`” characters before handing the resulting string to a JSON parser.</p>
+<p>Because string literals are by far the most common type of JSON value, an
+alternate syntax is supported where the starting and ending double quotes
+are not required for strings.  For example:</p>
+<pre><code>`foobar`   -&gt; &quot;foobar&quot;
+`&quot;foobar&quot;` -&gt; &quot;foobar&quot;
+`123`      -&gt; 123
+`&quot;123&quot;`    -&gt; &quot;123&quot;
+`123.foo`  -&gt; &quot;123.foo&quot;
+`true`     -&gt; true
+`&quot;true&quot;`   -&gt; &quot;true&quot;
+`truee`    -&gt; &quot;truee&quot;
+</code></pre>
+<p>Literal expressions aren’t allowed on the right hand side of a subexpression:</p>
+<pre><code>foo[*].`literal`
+</code></pre>
+<p>but they are allowed on the left hand side:</p>
+<pre><code>`{&quot;foo&quot;: &quot;bar&quot;}`.foo
+</code></pre>
+<p>They may also be included in other expressions outside of a filter expressions.
+For example:</p>
+<pre><code>{value: foo.bar, type: `multi-select-hash`}
+</code></pre>
+<h2 id="rationale-1"><a class="header" href="#rationale-1">Rationale</a></h2>
+<p>The proposed filter expression syntax was chosen such that there is sufficient
+expressive power for any type of filter one might need to perform while at the
+same time being as minimal as possible.  To help illustrate this, below are a
+few alternate syntax that were considered.</p>
+<p>In the simplest case where one might filter a key based on a literal value,
+a possible filter syntax would be:</p>
+<pre><code>foo[bar == baz]
+</code></pre>
+<p>or in general terms: <code>[identifier comparator literal-value]</code>.  However this
+has several issues:</p>
+<ul>
+<li>
+<p>It is not possible to filter based on two expressions (get all elements whose
+<code>foo</code> key equals its <code>bar</code> key.</p>
+</li>
+<li>
+<p>The literal value is on the right hand side, making it hard to troubleshoot
+if the identifier and literal value are swapped: <code>foo[baz == bar]</code>.</p>
+</li>
+<li>
+<p>Without some identifying token unary filters would not be possible as they
+would be ambiguous.  Is the expression <code>[foo]</code> filtering all elements with
+a foo key with a truth value or is it a multiselect-list selecting the
+<code>foo</code> key from each hash?  Starting a filter expression with a token such
+as <code>[?</code> make it clear that this is a filter expression.</p>
+</li>
+<li>
+<p>This makes the syntax for filtering against literal JSON arrays and objects
+hard to visually parse.  “Filter all elements whose <code>foo</code> key is a single
+list with a single integer value of 2:  <code>[foo == [2]]</code>.</p>
+</li>
+<li>
+<p>Adding literal expressions makes them useful even outside of a filter
+expression.  For example, in a <code>multi-select-hash</code>, you can create
+arbitrary key value pairs:  <code>{a: foo.bar, b: \</code>some string`}`.</p>
+</li>
+</ul>
+<p>This JEP is purposefully minimal.  There are several extensions that can be
+added in future:</p>
+<ul>
+<li>Support any arbitrary expression within the <code>[? ... ]</code>.  This would
+enable constructs such as or expressions within a filter.  This would
+allow unary expressions.</li>
+</ul>
+<p>In order for this to be useful we need to define what corresponds to true and
+false values, e.g. an empty list is a false value.  Additionally, “or
+expressions” would need to change its semantics to branch based on the
+true/false value of an expression instead of whether or not the expression
+evalutes to null.</p>
+<p>This is certainly a direction to take in the future, adding arbitrary
+expressions in a filter would be a backwards compatible change, so it’s not
+part of this JEP.</p>
+<ul>
+<li>Allow filter expressions as top level expressions.  This would potentially
+just return <code>true/false</code> for any value that it matched.</li>
+</ul>
+<p>This might be useful if you can combine this with something that can accept
+a list to use as a mask for filtering other elements.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="expression-types"><a class="header" href="#expression-types">Expression Types</a></h1>
+<ul>
+<li>JEP: 8</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2013-03-02</li>
+</ul>
+<h2 id="abstract-6"><a class="header" href="#abstract-6">Abstract</a></h2>
+<p>This JEP proposes grammar modifications to JMESPath to allow for
+expression references within functions.  This allows for functions
+such as <code>sort_by</code>, <code>max_by</code>, <code>min_by</code>.  These functions take
+an argument that resolves to an expression type.  This enables
+functionality such as sorting an array based on an expression that
+is evaluated against every array element.</p>
+<h2 id="motivation-6"><a class="header" href="#motivation-6">Motivation</a></h2>
+<p>A useful feature that is common in other expression languages is the
+ability to sort a JSON object based on a particular key.  For example,
+given a JSON object:</p>
+<pre><code>{
+  &quot;people&quot;: [
+       {&quot;age&quot;: 20, &quot;age_str&quot;: &quot;20&quot;, &quot;bool&quot;: true, &quot;name&quot;: &quot;a&quot;, &quot;extra&quot;: &quot;foo&quot;},
+       {&quot;age&quot;: 40, &quot;age_str&quot;: &quot;40&quot;, &quot;bool&quot;: false, &quot;name&quot;: &quot;b&quot;, &quot;extra&quot;: &quot;bar&quot;},
+       {&quot;age&quot;: 30, &quot;age_str&quot;: &quot;30&quot;, &quot;bool&quot;: true, &quot;name&quot;: &quot;c&quot;},
+       {&quot;age&quot;: 50, &quot;age_str&quot;: &quot;50&quot;, &quot;bool&quot;: false, &quot;name&quot;: &quot;d&quot;},
+       {&quot;age&quot;: 10, &quot;age_str&quot;: &quot;10&quot;, &quot;bool&quot;: true, &quot;name&quot;: 3}
+  ]
+}
+</code></pre>
+<p>It is not currently possible to sort the <code>people</code> array by the <code>age</code> key.
+Also, <code>sort</code> is not defined for the <code>object</code> type, so it’s not currently
+possible to even sort the <code>people</code> array.  In order to sort the <code>people</code>
+array, we need to know what key to use when sorting the array.</p>
+<p>This concept of sorting based on a key can be generalized.  Instead of
+requiring a key name, an expression can be provided that each element
+would be evaluated against.  In the simplest case, this expression would just
+be an <code>identifier</code>, but more complex expressions could be used such as
+<code>foo.bar.baz</code>.</p>
+<p>A simple way to accomplish this might be to create a function like this:</p>
+<pre><code>sort_by(array arg1, expression)
+
+# Called like:
+
+sort_by(people, age)
+sort_by(people, to_number(age_str))
+</code></pre>
+<p>However, there’s a problem with the <code>sort_by</code> function as defined above.
+If we follow the function argument resolution process we get:</p>
+<pre><code>sort_by(people, age)
+
+# 1. resolve people
+arg1 = search(people, &lt;input data&gt;) -&gt; [{&quot;age&quot;: ...}, {...}]
+
+# 2. resolve age
+arg2 = search(age, &lt;input data&gt;) -&gt; null
+
+sort_by([{&quot;age&quot;: ...}, {...}], null)
+</code></pre>
+<p>The second argument is evaluated against the current node and the expression
+<code>age</code> will resolve to <code>null</code> because the input data has no <code>age</code> key.
+There needs to be some way to specify that an expression should evaluate to
+an expression type:</p>
+<pre><code>arg = search(&lt;some expression&gt;, &lt;input data&gt;) -&gt; &lt;expression: age&gt;
+</code></pre>
+<p>Then the function definition of <code>sort_by</code> would be:</p>
+<pre><code>sort_by(array arg1, expression arg2)
+</code></pre>
+<h2 id="specification-2"><a class="header" href="#specification-2">Specification</a></h2>
+<p>The following grammar rules will be updated to:</p>
+<pre><code>function-arg        = expression /
+                      current-node /
+                      &quot;&amp;&quot; expression
+</code></pre>
+<p>Evaluating an expression reference should return an object of type
+“expression”.  The list of data types supported by a function will now be:</p>
+<ul>
+<li>
+<p>number (integers and double-precision floating-point format in JSON)</p>
+</li>
+<li>
+<p>string</p>
+</li>
+<li>
+<p>boolean (<code>true</code> or <code>false</code>)</p>
+</li>
+<li>
+<p>array (an ordered, sequence of values)</p>
+</li>
+<li>
+<p>object (an unordered collection of key value pairs)</p>
+</li>
+<li>
+<p>null</p>
+</li>
+<li>
+<p>expression (denoted by <code>&amp;expression</code>)</p>
+</li>
+</ul>
+<p>Function signatures can now be specified using this new <code>expression</code> type.
+Additionally, a function signature can specify the return type of the
+expression.  Similarly how arrays can specify a type within a list using the
+<code>array[type]</code> syntax, expressions can specify their resolved type using
+<code>expression-&gt;type</code> syntax.</p>
+<p>Note that any valid expression is allowed after <code>&amp;</code>, so the following
+expressions are valid:</p>
+<pre><code>sort_by(people, &amp;foo.bar.baz)
+sort_by(people, &amp;foo.bar[0].baz)
+sort_by(people, &amp;to_number(foo[0].bar))
+</code></pre>
+<h3 id="additional-functions"><a class="header" href="#additional-functions">Additional Functions</a></h3>
+<p>The following functions will be added:</p>
+<h4 id="sort_by"><a class="header" href="#sort_by">sort_by</a></h4>
+<pre><code>sort_by(array elements, expression-&gt;number|expression-&gt;string expr)
+</code></pre>
+<p>Sort an array using an expression <code>expr</code> as the sort key.
+Below are several examples using the <code>people</code> array (defined above) as the
+given input.  <code>sort_by</code> follows the same sorting logic as the <code>sort</code>
+function.</p>
+<h4 id="examples-14"><a class="header" href="#examples-14">Examples</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>sort_by(people, &amp;age)[].age</code></td><td>[10, 20, 30, 40, 50]</td></tr>
+<tr><td><code>sort_by(people, &amp;age)[0]</code></td><td>{&quot;age&quot;: 10, &quot;age_str&quot;: &quot;10&quot;, &quot;bool&quot;: true, &quot;name&quot;: 3}</td></tr>
+<tr><td><code>sort_by(people, &amp;to_number(age_str))[0]</code></td><td>{&quot;age&quot;: 10, &quot;age_str&quot;: &quot;10&quot;, &quot;bool&quot;: true, &quot;name&quot;: 3}</td></tr>
+</tbody></table>
+</div>
+<h4 id="max_by"><a class="header" href="#max_by">max_by</a></h4>
+<pre><code>max_by(array elements, expression-&gt;number expr)
+</code></pre>
+<p>Return the maximum element in an array using the expression <code>expr</code> as the
+comparison key.  The entire maximum element is returned.
+Below are several examples using the <code>people</code> array (defined above) as the
+given input.</p>
+<h4 id="examples-15"><a class="header" href="#examples-15">Examples</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>max_by(people, &amp;age)</code></td><td>{&quot;age&quot;: 50, &quot;age_str&quot;: &quot;50&quot;, &quot;bool&quot;: false, &quot;name&quot;: &quot;d&quot;}</td></tr>
+<tr><td><code>max_by(people, &amp;age).age</code></td><td>50</td></tr>
+<tr><td><code>max_by(people, &amp;to_number(age_str))</code></td><td>{&quot;age&quot;: 50, &quot;age_str&quot;: &quot;50&quot;, &quot;bool&quot;: false, &quot;name&quot;: &quot;d&quot;},</td></tr>
+<tr><td><code>max_by(people, &amp;age_str)</code></td><td>&lt;error: invalid-type&gt;</td></tr>
+<tr><td><code>max_by(people, age)</code></td><td>&lt;error: invalid-type&gt;</td></tr>
+</tbody></table>
+</div>
+<h4 id="min_by"><a class="header" href="#min_by">min_by</a></h4>
+<pre><code>min_by(array elements, expression-&gt;number expr)
+</code></pre>
+<p>Return the minimum element in an array using the expression <code>expr</code> as the
+comparison key.  The entire maximum element is returned.
+Below are several examples using the <code>people</code> array (defined above) as the
+given input.</p>
+<h4 id="examples-16"><a class="header" href="#examples-16">Examples</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>Expression</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>min_by(people, &amp;age)</code></td><td>{&quot;age&quot;: 10, &quot;age_str&quot;: &quot;10&quot;, &quot;bool&quot;: true, &quot;name&quot;: 3}</td></tr>
+<tr><td><code>min_by(people, &amp;age).age</code></td><td>10</td></tr>
+<tr><td><code>min_by(people, &amp;to_number(age_str))</code></td><td>{&quot;age&quot;: 10, &quot;age_str&quot;: &quot;10&quot;, &quot;bool&quot;: true, &quot;name&quot;: 3}</td></tr>
+<tr><td><code>min_by(people, &amp;age_str)</code></td><td>&lt;error: invalid-type&gt;</td></tr>
+<tr><td><code>min_by(people, age)</code></td><td>&lt;error: invalid-type&gt;</td></tr>
+</tbody></table>
+</div>
+<h3 id="alternatives"><a class="header" href="#alternatives">Alternatives</a></h3>
+<p>There were a number of alternative proposals considered.  Below outlines several of these alternatives.</p>
+<h4 id="logic-in-argument-resolver"><a class="header" href="#logic-in-argument-resolver">Logic in Argument Resolver</a></h4>
+<p>The first proposed choice (which was originally in JEP-3 but later removed) was
+to not have any syntactic construct for specifying functions, and to allow the
+function signature to dictate whether or not an argument was resolved.  The
+signature for <code>sort_by</code> would be:</p>
+<pre><code>sort_by(array arg1, any arg2)
+arg1 -&gt; resolved
+arg2 -&gt; not resolved
+</code></pre>
+<p>Then the argument resolver would introspect the argument specification of a
+function to determine what to do.  Roughly speaking, the pseudocode would be:</p>
+<pre><code>call-function(current-data)
+arglist = []
+for each argspec in functions-argspec:
+    if argspect.should_resolve:
+      arglist &lt;- resolve(argument, current-data)
+    else
+      arglist &lt;- argument
+type-check(arglist)
+return invoke-function(arglist)
+</code></pre>
+<p>However, there are several reasons not to do this:</p>
+<ul>
+<li>
+<p>This imposes a specific implementation.  This implementation would be
+challenging in a bytecode VM, as the CALL bytecode will typically
+resolve arguments onto the stack and allow the function to then
+pop arguments off the stack and perform its own arity validation.</p>
+</li>
+<li>
+<p>This deviates from the “standard” model of how functions are
+traditionally implemented.</p>
+</li>
+</ul>
+<h4 id="specifying-expressions-as-strings"><a class="header" href="#specifying-expressions-as-strings">Specifying Expressions as Strings</a></h4>
+<p>Another proposed alternative was to allow the expression to be
+a string type and to give functions the capability to parse/eval
+expressions.  The <code>sort_by</code> function would look like this:</p>
+<pre><code>sort_by(people, `age`)
+sort_by(people, `foo.bar.baz`)
+</code></pre>
+<p>The main reasons this proposal was not chosen was because:</p>
+<ul>
+<li>
+<p>This complicates the implementations.  For implementations that walk the AST
+inline, this means AST nodes need access to the parser.  For external tree
+visitors, the visitor needs access to the parser.</p>
+</li>
+<li>
+<p>This moves what <em>could</em> by a compile time error into a run time error.  The
+evaluation of the expression string happens when the function is invoked.</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="improved-filters"><a class="header" href="#improved-filters">Improved Filters</a></h1>
+<ul>
+<li>JEP: 9</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2014-07-07</li>
+</ul>
+<h2 id="abstract-7"><a class="header" href="#abstract-7">Abstract</a></h2>
+<p>JEP 7 introduced filter expressions, which is a mechanism to allow
+list elements to be selected based on matching an expression against
+each list element.  While this concept is useful, the actual comparator
+expressions were not sufficiently capable to accomodate a number of common
+queries.  This JEP expands on filter expressions by proposing support for
+<code>and-expressions</code>, <code>not-expression</code>, <code>paren-expressions</code>, and
+<code>unary-expressions</code>.  With these additions, the capabilities of a filter
+expression now allow for sufficiently powerful queries to handle the majority
+of queries.</p>
+<h2 id="motivation-7"><a class="header" href="#motivation-7">Motivation</a></h2>
+<p>JEP 7 introduced filter queries, that essentially look like this:</p>
+<pre><code>foo[?lhs omparator rhs]
+</code></pre>
+<p>where the left hand side (lhs)  and the right hand side (rhs)
+are both an <code>expression</code>, and comparator is one of
+<code>==, !=, &lt;, &lt;=, &gt;, &gt;=</code>.</p>
+<p>This added a useful feature to JMESPath: the ability to filter
+a list based on evaluating an expression against each element in a list.</p>
+<p>In the time since JEP 7 has been part of JMESPath, a number of cases have been
+pointed out in which filter expressions cannot solve.  Below are examples of
+each type of missing features.</p>
+<h3 id="or-expressions"><a class="header" href="#or-expressions">Or Expressions</a></h3>
+<p>First, users want the ability to filter based on matching one or more
+expressions.  For example, given:</p>
+<pre><code>{
+  &quot;cities&quot;: [
+    {&quot;name&quot;: &quot;Seattle&quot;, &quot;state&quot;: &quot;WA&quot;},
+    {&quot;name&quot;: &quot;Los Angeles&quot;, &quot;state&quot;: &quot;CA&quot;},
+    {&quot;name&quot;: &quot;Bellevue&quot;, &quot;state&quot;: &quot;WA&quot;},
+    {&quot;name&quot;: &quot;New York&quot;, &quot;state&quot;: &quot;NY&quot;},
+    {&quot;name&quot;: &quot;San Antonio&quot;, &quot;state&quot;: &quot;TX&quot;},
+    {&quot;name&quot;: &quot;Portland&quot;, &quot;state&quot;: &quot;OR&quot;}
+  ]
+}
+</code></pre>
+<p>a user might want to select locations on the west coast, which in
+this specific example means cities in either <code>WA</code>, <code>OR</code>, or
+<code>CA</code>.  It’s not possible to express this as a filter expression
+given the grammar of <code>expression comparator expression</code>.  Ideally
+a user should be able to use:</p>
+<pre><code>cities[?state == `WA` || state == `OR` || state == `CA`]
+</code></pre>
+<p>JMESPath already supports Or expressions, just not in the context
+of filter expressions.</p>
+<h3 id="and-expressions"><a class="header" href="#and-expressions">And Expressions</a></h3>
+<p>The next missing feature of filter expressions is support for And
+expressions.  It’s actually somewhat odd that JMESPath has support
+for Or expressions, but not for And expressions.  For example,
+given a list of user accounts with permissions:</p>
+<pre><code>{
+  &quot;users&quot;: [
+    {&quot;name&quot;: &quot;user1&quot;, &quot;type&quot;: &quot;normal&quot;&quot;, &quot;allowed_hosts&quot;: [&quot;a&quot;, &quot;b&quot;]},
+    {&quot;name&quot;: &quot;user2&quot;, &quot;type&quot;: &quot;admin&quot;, &quot;allowed_hosts&quot;: [&quot;a&quot;, &quot;b&quot;]},
+    {&quot;name&quot;: &quot;user3&quot;, &quot;type&quot;: &quot;normal&quot;, &quot;allowed_hosts&quot;: [&quot;c&quot;, &quot;d&quot;]},
+    {&quot;name&quot;: &quot;user4&quot;, &quot;type&quot;: &quot;admin&quot;, &quot;allowed_hosts&quot;: [&quot;c&quot;, &quot;d&quot;]},
+    {&quot;name&quot;: &quot;user5&quot;, &quot;type&quot;: &quot;normal&quot;, &quot;allowed_hosts&quot;: [&quot;c&quot;, &quot;d&quot;]},
+    {&quot;name&quot;: &quot;user6&quot;, &quot;type&quot;: &quot;normal&quot;, &quot;allowed_hosts&quot;: [&quot;c&quot;, &quot;d&quot;]}
+  ]
+}
+</code></pre>
+<p>We’d like to find admin users that have permissions to the host named
+<code>c</code>.  Ideally, the filter expression would be:</p>
+<pre><code>users[?type == `admin` &amp;&amp; contains(allowed_hosts, `c`)]
+</code></pre>
+<h3 id="unary-expressions"><a class="header" href="#unary-expressions">Unary Expressions</a></h3>
+<p>Think of an if statement in a language such as C or Java.  While you can write
+an if statement that looks like:</p>
+<pre><code>if (foo == bar) { ... }
+</code></pre>
+<p>You can also use a unary expression such as:</p>
+<pre><code>if (allowed_access) { ... }
+</code></pre>
+<p>or:</p>
+<pre><code>if (!allowed_access) { ... }
+</code></pre>
+<p>Adding support for unary expressions brings a natural syntax when filtering
+against boolean values.  Instead of:</p>
+<pre><code>foo[?boolean_var == `true`]
+</code></pre>
+<p>a user could instead use:</p>
+<pre><code>foo[?boolean_var]
+</code></pre>
+<p>As a more realistic example, given a slightly different structure
+for the <code>users</code> data above:</p>
+<pre><code>{
+  &quot;users&quot;: [
+    {&quot;name&quot;: &quot;user1&quot;, &quot;is_admin&quot;: false, &quot;disabled&quot;: false},
+    {&quot;name&quot;: &quot;user2&quot;, &quot;is_admin&quot;: true, &quot;disabled&quot;: true},
+    {&quot;name&quot;: &quot;user3&quot;, &quot;is_admin&quot;: false, &quot;disabled&quot;: false},
+    {&quot;name&quot;: &quot;user4&quot;, &quot;is_admin&quot;: true, &quot;disabled&quot;: false},
+    {&quot;name&quot;: &quot;user5&quot;, &quot;is_admin&quot;: false, &quot;disabled&quot;: true},
+    {&quot;name&quot;: &quot;user6&quot;, &quot;is_admin&quot;: false, &quot;disabled&quot;: false}
+  ]
+}
+</code></pre>
+<p>If we want to get the names of all admin users whose account is enabled, we
+could either say:</p>
+<pre><code>users[?is_admin == `true` &amp;&amp; disabled == `false]
+</code></pre>
+<p>but it’s more natural and succinct to instead say:</p>
+<pre><code>users[?is_admin &amp;&amp; !disabled]
+</code></pre>
+<p>A case can be made that this syntax is not strictly necessary.  This is true.
+However, the main reason for adding support for unary expressions in a filter
+expression is users expect this syntax, and are surprised when this is not
+a supported syntax.  Especially now that we are basically anchoring to
+a C-like syntax for filtering in this JEP, users will expect unary expressions
+even more.</p>
+<h3 id="paren-expressions"><a class="header" href="#paren-expressions">Paren Expressions</a></h3>
+<p>Once <code>||</code> and <code>&amp;&amp;</code> statements have been introduced, there will be times
+when you want to override the precedence of these operators.</p>
+<p>A <code>paren-expression</code> allows a user to override the precedence order of
+an expression, e.g. <code>(a || b) &amp;&amp; c</code>, instead of the default precedence
+of <code>a || (b &amp;&amp; c)</code> for the expression <code>a || b &amp;&amp; c</code>.</p>
+<h2 id="specification-3"><a class="header" href="#specification-3">Specification</a></h2>
+<p>There are several updates to the grammar:</p>
+<pre><code>and-expression         = expression &quot;&amp;&amp;&quot; expression
+not-expression         = &quot;!&quot; expression
+paren-expression       = &quot;(&quot; expression &quot;)&quot;
+</code></pre>
+<p>Additionally, the <code>filter-expression</code> rule is updated
+to be more general:</p>
+<pre><code>bracket-specifier      =/ &quot;[?&quot; expression &quot;]&quot;
+</code></pre>
+<p>The <code>list-filter-expr</code> is now a more general
+<code>comparator-expression</code>:</p>
+<pre><code>comparator-expression  = expression comparator expression
+</code></pre>
+<p>which is now just an expression:</p>
+<pre><code>expression /= comparator-expression
+</code></pre>
+<p>And finally, the <code>current-node</code> is now allowed as a generic
+expression:</p>
+<pre><code>expression /= current-node
+</code></pre>
+<h3 id="operator-precedence"><a class="header" href="#operator-precedence">Operator Precedence</a></h3>
+<p>This JEP introduces and expressions, which would normally be defined as:</p>
+<pre><code>expression     = or-expression / and-expression / not-expression
+or-expression  = expression &quot;||&quot; expression
+and-expression = expression &quot;&amp;&amp;&quot; expression
+not-expression = &quot;!&quot; expression
+</code></pre>
+<p>However, if this current pattern is followed, it makes it impossible to parse
+an expression with the correct precedence.  A more standard way of expressing
+this would be:</p>
+<pre><code>expression          = or-expression
+or-expression       = and-expression &quot;||&quot; and-expression
+and-expression      = not-expression &quot;&amp;&amp;&quot; not-expression
+not-expression      = &quot;!&quot; expression
+</code></pre>
+<p>The precedence for the new boolean expressions matches how most
+other languages define boolean expressions.  That is from weakest
+binding to tightest binding:</p>
+<ul>
+<li>
+<p>Or - <code>||</code></p>
+</li>
+<li>
+<p>And - <code>&amp;&amp;</code></p>
+</li>
+<li>
+<p>Unary not - <code>!</code></p>
+</li>
+</ul>
+<p>So for example, <code>a || b &amp;&amp; c</code> is parsed as <code>a || (b &amp;&amp; c)</code> and
+not <code>(a || b) &amp;&amp; c</code>.</p>
+<p>The operator precedence list in the specification will now read:</p>
+<ul>
+<li>
+<p>Pipe - <code>|</code></p>
+</li>
+<li>
+<p>Or - <code>||</code></p>
+</li>
+<li>
+<p>And - <code>&amp;&amp;</code></p>
+</li>
+<li>
+<p>Unary not - <code>!</code></p>
+</li>
+<li>
+<p>Rbracket - <code>]</code></p>
+</li>
+</ul>
+<p>Now that these expressions are allowed as general <code>expressions</code>, there
+semantics outside of their original contexts must be defined.</p>
+<h3 id="and-expressions-1"><a class="header" href="#and-expressions-1">And Expressions</a></h3>
+<p>For reference, the JMESPath spec already defines the following values
+as “false-like” values:</p>
+<ul>
+<li>
+<p>Empty list: <code>[]</code></p>
+</li>
+<li>
+<p>Empty object: <code>{}</code></p>
+</li>
+<li>
+<p>Empty string: <code>&quot;&quot;</code></p>
+</li>
+<li>
+<p>False boolean: <code>false</code></p>
+</li>
+<li>
+<p>Null value: <code>null</code></p>
+</li>
+</ul>
+<p>And any value that is not a false-like value is a truth-like value.</p>
+<p>An <code>and-expression</code> has similar semantics to and expressions in other
+languages.  If the expression on the left hand side is a truth-like value, then
+the value on the right hand side is returned.  Otherwise the result of the
+expression on the left hand side is returned.  This also reduces to the
+expected truth table:</p>
+<h3 id="truth-table-for-and-expressions"><a class="header" href="#truth-table-for-and-expressions">Truth table for and expressions</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>LHS</th><th>RHS</th><th>Result</th></tr></thead><tbody>
+<tr><td>True</td><td>True</td><td>True</td></tr>
+<tr><td>True</td><td>False</td><td>False</td></tr>
+<tr><td>False</td><td>True</td><td>False</td></tr>
+<tr><td>False</td><td>False</td><td>False</td></tr>
+</tbody></table>
+</div>
+<p>This is the standard truth table for a
+<a href="https://en.wikipedia.org/wiki/Truth_table#Logical_conjunction_.28AND.29">logical conjunction (AND)</a>.</p>
+<p>Below are a few examples of and expressions:</p>
+<h4 id="examples-17"><a class="header" href="#examples-17">Examples</a></h4>
+<pre><code>search(True &amp;&amp; False, {&quot;True&quot;: true, &quot;False&quot;: false}) -&gt; false
+search(Number &amp;&amp; EmptyList, {&quot;Number&quot;: 5, EmptyList: []}) -&gt; []
+search(foo[?a == `1` &amp;&amp; b == `2`],
+       {&quot;foo&quot;: [{&quot;a&quot;: 1, &quot;b&quot;: 2}, {&quot;a&quot;: 1, &quot;b&quot;: 3}]}) -&gt; [{&quot;a&quot;: 1, &quot;b&quot;: 2}]
+</code></pre>
+<h3 id="not-expressions"><a class="header" href="#not-expressions">Not Expressions</a></h3>
+<p>A <code>not-expression</code> negates the result of an expression.  If the expression
+results in a truth-like value, a <code>not-expression</code> will change this value to
+<code>false</code>.  If the expression results in a false-like value, a
+<code>not-expression</code> will change this value to <code>true</code>.</p>
+<h4 id="examples-18"><a class="header" href="#examples-18">Examples</a></h4>
+<pre><code>search(!True, {&quot;True&quot;: true}) -&gt; false
+search(!False, {&quot;False&quot;: false}) -&gt; true
+search(!Number, {&quot;Number&quot;: 5}) -&gt; false
+search(!EmptyList, {&quot;EmptyList&quot;: []}) -&gt; true
+</code></pre>
+<h3 id="paren-expressions-1"><a class="header" href="#paren-expressions-1">Paren Expressions</a></h3>
+<p>A <code>paren-expression</code> allows a user to override the precedence order of
+an expression, e.g. <code>(a || b) &amp;&amp; c</code>.</p>
+<h4 id="examples-19"><a class="header" href="#examples-19">Examples</a></h4>
+<pre><code>search(foo[?(a == `1` || b ==`2`) &amp;&amp; c == `5`],
+       {&quot;foo&quot;: [{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: 3}, {&quot;a&quot;: 3, &quot;b&quot;: 4}]}) -&gt; []
+</code></pre>
+<h2 id="rationale-2"><a class="header" href="#rationale-2">Rationale</a></h2>
+<p>This JEP brings several tokens that were only allowed in specific constructs
+into the more general <code>expression</code> rule.  Specifically:</p>
+<ul>
+<li>
+<p>The <code>current-node</code> (<code>@</code>) was previously only allowed in function
+expressions, but is now allowed as a general <code>expression</code>.</p>
+</li>
+<li>
+<p>The <code>filter-expression</code> now accepts any arbitrary <code>expression</code>.</p>
+</li>
+<li>
+<p>The <code>list-filter-expr</code> is now just a generic <code>comparator-expression</code>,
+which again is just a general <code>expression</code>.</p>
+</li>
+</ul>
+<p>There are several reasons the previous grammar rules were minimally scoped.
+One of the main reasons, as stated in JEP 7 which introduced filter
+expressions, was to keep the spec “purposefully minimal.”  In fact the end
+of JEP 7 states that there “are several extensions that can be added in
+future.” This is in fact exactly what this JEP proposes, the recommendations
+from JEP 7.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="slice-projections"><a class="header" href="#slice-projections">Slice Projections</a></h1>
+<ul>
+<li>JEP: 10</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2015-02-08</li>
+</ul>
+<h2 id="abstract-8"><a class="header" href="#abstract-8">Abstract</a></h2>
+<p>This document proposes modifying the semantics of slice expressions to
+create projections, which brings consistency with the wildcard,
+flattening, and filtering projections.</p>
+<h2 id="motivation-8"><a class="header" href="#motivation-8">Motivation</a></h2>
+<p>JEP 5 introduced slice expressions.  This added python slice semantics
+to JSON.  Slicing does not produce a projection so expressions such as
+the following will always return <code>null</code>:  <code>myarray[:10].foo.bar</code>.</p>
+<p>Instead if you wanted to access <code>foo.bar</code>  for each element in the
+array slice you currently have to write <code>myarray[:10][*].foo.bar</code>.</p>
+<p>This JEP proposes that a slice expression will create a projection.</p>
+<h3 id="rationale-3"><a class="header" href="#rationale-3">Rationale</a></h3>
+<p>A reasonable objection to this JEP is that this is unnecessary because, as
+shown in the example above, you can take any slice and create a projection via
+<code>[\*]</code>.  This is entirely true, unlike other JEPs, this JEP does not enable
+any behavior that was previously not possible.</p>
+<p>Instead, the main reason for this JEP is for consistency.  Right now there are
+three types of array projections:</p>
+<ul>
+<li>
+<p>List Projections (<code>foo[*].bar</code>)</p>
+</li>
+<li>
+<p>Filter Projections (<code>foo[?a==b].bar</code>)</p>
+</li>
+<li>
+<p>Flatten Projections (<code>foo[].bar</code>)</p>
+</li>
+</ul>
+<p>Note the general form, <code>foo[&lt;stuff here&gt;].&lt;child-expr&gt;</code>.  Each of the
+existing array projections have the same general semantics:</p>
+<ul>
+<li>
+<p>Take the left hand side, which is a list, and produce another list as a
+result of evaluating the left hand side.  This newly produced list will
+contain elements of the original input (or elements of the elements of
+the original input in the case of the flatten projection).</p>
+</li>
+<li>
+<p>Evaluate the right hand side against each element in the list produced
+from evaluating the left hand side.</p>
+</li>
+</ul>
+<p>So in general, the left hand side is responsible for creating a new list
+but not for manipulating individual elements of the list.  The right hand
+side is for manipulating individual elements of the list.  In the case
+of the list projection, every element from the original list is used.
+In the case of a filter projection, only elements matching an expression
+are passed to the right hand side.  In the case of a flatten projection,
+sub arrays are merged before passing the expression onto the right hand
+side.</p>
+<p>It’s a reasonable expectation that slices behave similar.  After all,
+slices take an array and produce a sub array.  It many ways, it’s very
+similar to filter projections.  While filter projections only include
+elements that match a particular expression, slice projections
+only include elements from and to a specific index.  Given its semantics
+are so close to the filter projections, slices should create projections
+to be consistent.</p>
+<h2 id="specification-4"><a class="header" href="#specification-4">Specification</a></h2>
+<p>Whenver a slice is created, a projection will be created. This will be the
+fourth type of array projection in JMESPath.  In addition to the existing array
+projections:</p>
+<ul>
+<li>
+<p>List Projections</p>
+</li>
+<li>
+<p>Flatten Projections</p>
+</li>
+<li>
+<p>Filter Projections</p>
+</li>
+</ul>
+<p>A new projection type, the slice projection will be added.  A slice projection
+is evaluated similar to the other array projections.  Given a slice projection
+which contains a left hand side containing the slice expression and a right
+hand side, the slice expression is evaluated to create a new sub array, and
+each expression on the right hand side is evaluted against each element from
+the array slice to create the final result.</p>
+<p>This JEP does not include any modifications to the JMESPath grammar.</p>
+<h2 id="impact-1"><a class="header" href="#impact-1">Impact</a></h2>
+<p>The impact to existing users of slices is minimal.  Consider:</p>
+<ul>
+<li>
+<p>Existing expressions such as <code>foo[:10].bar</code> are currently returning
+<code>null</code>.  Now they will return non <code>null</code> values.</p>
+</li>
+<li>
+<p>The only impact to existing users is if someone had an expression such as
+<code>foo[:10][0]</code>, which given the projection semantics will now create a list
+containing the 0th element from each sublist.  Before this JEP, that
+expression is equivalent to <code>foo[0]</code> so the slice is unnecessary.  And any
+users that actually had expressions like this can now just use <code>foo[0]</code>
+instead.</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lexical-scoping"><a class="header" href="#lexical-scoping">Lexical Scoping</a></h1>
+<ul>
+<li>JEP: 11</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2015-02-24</li>
+</ul>
+<h2 id="abstract-9"><a class="header" href="#abstract-9">Abstract</a></h2>
+<p>This JEP proposes a new function <code>let()</code> (originally proposed by Michael
+Dowling) that allows for evaluating an expression with an explicitly
+defined lexical scope. This will require some changes to the lookup
+semantics in JMESPath to introduce scoping, but provides useful
+functionality such as being able to refer to elements defined outside of
+the current scope used to evaluate an expression.</p>
+<h2 id="motivation-9"><a class="header" href="#motivation-9">Motivation</a></h2>
+<p>As a JMESPath expression is being evaluated, the current element, which
+can be explicitly referred to via the <code>@</code> token, changes as expressions
+are evaluated. Given a simple sub expression such as <code>foo.bar</code>, first
+the <code>foo</code> expression is evaluted with the starting input JSON document,
+and the result of that expression is then used as the current element
+when the <code>bar</code> element is evaluted. Conceptually we're taking some
+object, and narrowing down its current element as the expression is
+evaluted.</p>
+<p>Once we've drilled down to a specific current element, there is no way,
+in the context of the currently evaluated expression, to refer to any
+elements outside of that element. One scenario where this is problematic
+is being able to refer to a parent element.</p>
+<p>For example, suppose we had this data:</p>
+<pre><code>    {&quot;first_choice&quot;: &quot;WA&quot;,
+     &quot;states&quot;: [
+       {&quot;name&quot;: &quot;WA&quot;, &quot;cities&quot;: [&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;]},
+       {&quot;name&quot;: &quot;CA&quot;, &quot;cities&quot;: [&quot;Los Angeles&quot;, &quot;San Francisco&quot;]},
+       {&quot;name&quot;: &quot;NY&quot;, &quot;cities&quot;: [&quot;New York City&quot;, &quot;Albany&quot;]},
+     ]
+    }
+</code></pre>
+<p>Let's say we wanted to get the list of cities of the state
+corresponding to our <code>first_choice</code> key. We'll make the assumption that
+the state names are unique in the <code>states</code> list. This is currently not
+possible with JMESPath. In this example we can hard code the state <code>WA</code>:</p>
+<pre><code>    states[?name==`WA`].cities
+</code></pre>
+<p>but it is not possible to base this on a value of <code>first_choice</code>, which
+comes from the parent element. This JEP proposes a solution that makes
+this possible in JMESPath.</p>
+<h2 id="specification-5"><a class="header" href="#specification-5">Specification</a></h2>
+<p>There are two components to this JEP, a new function, <code>let()</code>, and a
+change to the way that identifiers are resolved.</p>
+<h3 id="the-let-function"><a class="header" href="#the-let-function">The let() Function</a></h3>
+<p>The <code>let()</code> function is heavily inspired from the <code>let</code> function
+commonly seen in the Lisp family of languages:</p>
+<ul>
+<li><a href="https://clojuredocs.org/clojure.core/let">https://clojuredocs.org/clojure.core/let</a></li>
+<li><a href="http://docs.racket-lang.org/guide/let.html">http://docs.racket-lang.org/guide/let.html</a></li>
+</ul>
+<p>The let function is defined as follows:</p>
+<pre><code>    any let(object scope, expression-&gt;any expr)
+</code></pre>
+<p><code>let</code> is a function that takes two arguments. The first argument is a
+JSON object. This hash defines the names and their corresponding values
+that will be accessible to the expression specified in the second
+argument. The second argument is an expression reference that will be
+evaluated.</p>
+<h3 id="resolving-identifiers"><a class="header" href="#resolving-identifiers">Resolving Identifiers</a></h3>
+<p>Prior to this JEP, identifiers are resolved by consulting the current
+context in which the expression is evaluted. For example, using the same
+<code>search</code> function as defined in the JMESPath specification, the
+evaluation of:</p>
+<pre><code>    search(foo, {&quot;foo&quot;: &quot;a&quot;, &quot;bar&quot;: &quot;b&quot;}) -&gt; &quot;a&quot;
+</code></pre>
+<p>will result in the <code>foo</code> identifier being resolved in the context of the
+input object <code>{&quot;foo&quot;: &quot;a&quot;, &quot;bar&quot;: &quot;b&quot;}</code>. The context object defines
+<code>foo</code> as <code>a</code>, which results in the identifier <code>foo</code> being resolved as
+<code>a</code>.</p>
+<p>In the case of a sub expression, where the current evaluation context
+changes once the left hand side of the sub expression is evaluted:</p>
+<pre><code>    search(a.b, {&quot;a&quot;: {&quot;b&quot;: &quot;y&quot;}) -&gt; &quot;y&quot;
+</code></pre>
+<p>The identifier <code>b</code> is resolved with a current context of <code>{&quot;b&quot;: &quot;y&quot;}</code>,
+which results in a value of <code>y</code>.</p>
+<p>This JEP adds an additional step to resolving identifiers. In addition
+to the implicit evaluation context that changes based on the result of
+continually evaluating expressions, the <code>let()</code> command allows for
+additional contexts to be specified, which we refer to by the common
+name scope. The steps for resolving an identifier are:</p>
+<ul>
+<li>Attempt to lookup the identifier in the current evaluation context.</li>
+<li>If this identifier is not resolved, look up the value in the current
+scope provided by the user.</li>
+<li>If the idenfitier is not resolved and there is a parent scope,
+attempt to resolve the identifier in the parent scope. Continue
+doing this until there is no parent scope, in which case, if the
+identifier has not been resolved, the identifier is resolved as
+<code>null</code>.</li>
+</ul>
+<p>Parent scopes are created by nested <code>let()</code> calls.</p>
+<p>Below are a few examples to make this more clear. First, let's examine
+the case where the identifier can be resolved from the current
+evaluation context:</p>
+<pre><code>    search(let({a: `x`}, &amp;b), {&quot;b&quot;: &quot;y&quot;}) -&gt; &quot;y&quot;
+</code></pre>
+<p>In this scenario, we are evaluating the expression <code>b</code>, with the context
+object of <code>{&quot;b&quot;: &quot;y&quot;}</code>. Here <code>b</code> has a value of <code>y</code>, so the result of
+this function is <code>y</code>.</p>
+<p>Now let's look at an example where an identifier is resolved from a
+scope object provided via <code>let()</code>:</p>
+<pre><code>    search(let({a: `x`}, &amp;a, {&quot;b&quot;: &quot;y&quot;})) -&gt; &quot;x&quot;
+</code></pre>
+<p>Here, we're trying to resolve the <code>a</code> identifier. The current
+evaluation context, <code>{&quot;b&quot;: &quot;y&quot;}</code>, does not define <code>a</code>. Normally, this
+would result in the identifier being resolved as <code>null</code>:</p>
+<pre><code>    search(a, {&quot;b&quot;: &quot;y&quot;}) -&gt; null
+</code></pre>
+<p>However, we now fall back to looking in the provided scope object
+<code>{&quot;a&quot;: &quot;x&quot;}</code>, which was provided as the first argument to <code>let</code>. Note
+here that the value of <code>a</code> has a value of <code>&quot;x&quot;</code>, so the identifier is
+resolved as <code>&quot;x&quot;</code>, and the return value of the <code>let()</code> function is
+<code>&quot;x&quot;</code>.</p>
+<p>Finally, let's look at an example of parent scopes. Consider the
+following expression:</p>
+<pre><code>    search(let({a: `x`}, &amp;let({b: `y`}, &amp;{a: a, b: b, c: c})),
+           {&quot;c&quot;: &quot;z&quot;}) -&gt; {&quot;a&quot;: &quot;x&quot;, &quot;b&quot;: &quot;y&quot;, &quot;c&quot;: &quot;z&quot;}
+</code></pre>
+<p>Here we have nested let calls, and the expression we are trying to
+evaluate is the multiselect hash <code>{a: a, b: b, c: c}</code>. The <code>c</code>
+identifier comes from the evaluation context <code>{&quot;c&quot;: &quot;z&quot;}</code>. The <code>b</code>
+identifier comes from the scope object in the second <code>let</code> call:
+<code>{b: `y`}</code>. And finally, here's the lookup process for the <code>a</code>
+identifier:</p>
+<ul>
+<li>Is <code>a</code> defined in the current evaluation context? No.</li>
+<li>Is <code>a</code> defined in the scope provided by the user? No.</li>
+<li>Is there a parent scope? Yes</li>
+<li>Does the parent scope, <code>{a: `x`}</code>, define <code>a</code>? Yes, <code>a</code> has the
+value of <code>&quot;x&quot;</code>, so <code>a</code> is resolved as the string <code>&quot;x&quot;</code>.</li>
+</ul>
+<h3 id="current-node-evaluation"><a class="header" href="#current-node-evaluation">Current Node Evaluation</a></h3>
+<p>While the JMESPath specification defines how the current node is
+determined, it is worth explicitly calling out how this works with the
+<code>let()</code> function and expression references. Consider the following
+expression:</p>
+<pre><code>    a.let({x: `x`}, &amp;b.let({y: `y`}, &amp;c))
+</code></pre>
+<p>Given the input data:</p>
+<pre><code>    {&quot;a&quot;: {&quot;b&quot;: {&quot;c&quot;: &quot;foo&quot;}}}
+</code></pre>
+<p>When the expression <code>c</code> is evaluated, the current evaluation context is
+<code>{&quot;c&quot;: &quot;foo&quot;}</code>. This is because this expression isn't evaluated until
+the second <code>let()</code> call evaluates the expression, which does not occur
+until the first <code>let()</code> function evaluates the expression.</p>
+<h3 id="motivating-example"><a class="header" href="#motivating-example">Motivating Example</a></h3>
+<p>With these changes defined, the expression in the &quot;Motivation&quot; section
+can be be written as:</p>
+<pre><code>    let({first_choice: first_choice}, &amp;states[?name==first_choice].cities)
+</code></pre>
+<p>Which evalutes to <code>[&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;]</code>.</p>
+<h2 id="rationale-4"><a class="header" href="#rationale-4">Rationale</a></h2>
+<p>If we just consider the feature of being able to refer to a parent
+element, this approach is not the only way to accomplish this. We could
+also allow for explicit references using a specific token, say <code>$</code>. The
+original example in the &quot;Motivation&quot; section would be:</p>
+<pre><code>    states[?name==$.first_choice].cities
+</code></pre>
+<p>While this could work, this has a number of downsides, the biggest one
+being that you'll need to always keep track of the parent element. You
+don't know ahead of time if you're going to need the parent element,
+so you'll always need to track this value. It also doesn't handle
+nested lexical scopes. What if you wanted to access a value in the grand
+parent element? Requiring an explicit binding approach via <code>let()</code>
+handles both these cases, and doesn't require having to track parent
+elements. You only need to track additional scope when <code>let()</code> is used.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="raw-string-literals"><a class="header" href="#raw-string-literals">Raw String Literals</a></h1>
+<ul>
+<li>JEP: 12</li>
+<li>Author: Michael Downling</li>
+<li>Created: 2015-04-09</li>
+</ul>
+<h2 id="abstract-10"><a class="header" href="#abstract-10">Abstract</a></h2>
+<p>This JEP proposes the following modifications to JMESPath in order to improve
+the usability of the language and ease the implementation of parsers:</p>
+<ul>
+<li>
+<p>Addition of a <strong>raw string literal</strong> to JMESPath that will allow expressions
+to contain raw strings that are not mutated by JSON escape sequences (e.g.,
+“\n”, “\r”, “\u005C”).</p>
+</li>
+<li>
+<p>Deprecation of  the current literal parsing behavior that allows for unquoted
+JSON strings to be parsed as JSON strings, removing an ambiguity in the
+JMESPath grammar and helping to ensure consistency among implementations.</p>
+</li>
+</ul>
+<p>This proposal seeks to add the following syntax to JMESPath:</p>
+<pre><code>'foobar'
+'foo\'bar'
+`bar` -&gt; Parse error/warning (implementation specific)
+</code></pre>
+<h2 id="motivation-10"><a class="header" href="#motivation-10">Motivation</a></h2>
+<p>Raw string literals are provided in <a href="https://en.wikipedia.org/wiki/String_literal#Raw_strings">various programming languages</a> in order to prevent
+language specific interpretation (i.e., JSON parsing) and remove the need for
+escaping, avoiding a common problem called <a href="https://en.wikipedia.org/wiki/Leaning_toothpick_syndrome">leaning toothpick syndrome (LTS)</a>. Leaning toothpick
+syndrome is an issue in which strings become unreadable due to excessive use of
+escape characters in order to avoid delimiter collision (e.g., <code>\\\\\\\\\\\\</code>).</p>
+<p>When evaluating a JMESPath expression, it is often necessary to utilize string
+literals that are not extracted from the data being evaluated, but rather
+statically part of the compiled JMESPath expression. String literals are useful
+in many areas, but most notably when invoking functions or building up
+multi-select lists and hashes.</p>
+<p>The following expression returns the number of characters found in the string
+<code>&quot;foo&quot;</code>. When parsing this expression, <code>`&quot;foo&quot;`</code> is parsed as a JSON value
+which produces the string literal value of <code>foo</code>:</p>
+<pre><code>`&quot;foo&quot;`
+</code></pre>
+<p>The following expression is functionally equivalent. Notice that the quotes are
+elided from the JSON literal:</p>
+<pre><code>`foo`
+</code></pre>
+<p>These string literals are parsed using a JSON parser according to
+<a href="https://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>, which will expand unicode
+escape sequences, newline characters, and several other escape sequences
+documented in RFC 4627 section 2.5.</p>
+<p>For example, the use of an escaped unicode value <code>\\u002B</code> is expanded into
+<code>+</code> in the following JMESPath expression:</p>
+<pre><code>`&quot;foo\u002B&quot;` -&gt; &quot;foo+&quot;
+</code></pre>
+<p>You can escape escape sequences in JSON literals to prevent an escape sequence
+from being expanded:</p>
+<pre><code>`&quot;foo\\u002B&quot;` -&gt; &quot;foo\u002B&quot;
+`foo\\u002B` -&gt; &quot;foo\u002B&quot;
+</code></pre>
+<p>While this allows you to provide literal strings, it presents the following
+problems:</p>
+<ol>
+<li>
+<p>Incurs an additional JSON parsing penalty.</p>
+</li>
+<li>
+<p>Requires the cognitive overhead of escaping escape characters if you
+actually want the data to be represented as it was literally provided
+(which can lead to LTS). If the data being escaped was meant to be used
+along with another language that uses <code>\\</code> as an escape character, then the
+number of backslash characters doubles.</p>
+</li>
+<li>
+<p>Introduces an ambiguous rule to the JMESPath grammar that requires a prose
+based specification to resolve the ambiguity in parser implementations.</p>
+</li>
+</ol>
+<p>The relevant literal grammar rules are currently defined as follows:</p>
+<pre><code>literal = &quot;`&quot; json-value &quot;`&quot;
+literal =/ &quot;`&quot; 1*(unescaped-literal / escaped-literal) &quot;`&quot;
+unescaped-literal = %x20-21 /       ; space !
+                        %x23-5B /   ; # - [
+                        %x5D-5F /   ; ] ^ _
+                        %x61-7A     ; a-z
+                        %x7C-10FFFF ; |}~ ...
+escaped-literal   = escaped-char / (escape %x60)
+json-value = false / null / true / json-object / json-array /
+             json-number / json-quoted-string
+false = %x66.61.6c.73.65   ; false
+null  = %x6e.75.6c.6c      ; null
+true  = %x74.72.75.65      ; true
+json-quoted-string = %x22 1*(unescaped-literal / escaped-literal) %x22
+begin-array     = ws %x5B ws  ; [ left square bracket
+begin-object    = ws %x7B ws  ; { left curly bracket
+end-array       = ws %x5D ws  ; ] right square bracket
+end-object      = ws %x7D ws  ; } right curly bracket
+name-separator  = ws %x3A ws  ; : colon
+value-separator = ws %x2C ws  ; , comma
+ws              = *(%x20 /              ; Space
+                    %x09 /              ; Horizontal tab
+                    %x0A /              ; Line feed or New line
+                    %x0D                ; Carriage return
+                   )
+json-object = begin-object [ member *( value-separator member ) ] end-object
+member = quoted-string name-separator json-value
+json-array = begin-array [ json-value *( value-separator json-value ) ] end-array
+json-number = [ minus ] int [ frac ] [ exp ]
+decimal-point = %x2E       ; .
+digit1-9 = %x31-39         ; 1-9
+e = %x65 / %x45            ; e E
+exp = e [ minus / plus ] 1*DIGIT
+frac = decimal-point 1*DIGIT
+int = zero / ( digit1-9 *DIGIT )
+minus = %x2D               ; -
+plus = %x2B                ; +
+zero = %x30                ; 0
+</code></pre>
+<p>The <code>literal</code> rule is ambiguous because <code>unescaped-literal</code> includes
+all of the same characters that <code>json-value</code> match, allowing any value
+that is valid JSON to be matched on either <code>unescaped-literal</code> or
+<code>json-value</code>.</p>
+<h3 id="rationale-5"><a class="header" href="#rationale-5">Rationale</a></h3>
+<p>When implementing parsers for JMESPath, one must provide special case parsing
+when parsing JSON literals due to the allowance of elided quotes around JSON
+string literals (e.g., <code>`foo`</code>). This specific aspect of JMESPath cannot be
+described unambiguously in a context free grammar and could become a common
+cause of errors when implementing JMESPath parsers.</p>
+<p>Parsing JSON literals has other complications as well. Here are the steps
+needed to currently parse a JSON literal value in JMESPath:</p>
+<ol>
+<li>
+<p>When a <code>`</code> token is encountered, begin parsing a JSON literal.</p>
+</li>
+<li>
+<p>Collect each character between the opening <code>`</code> and closing <code>`</code>
+tokens, including any escaped <code>`</code> characters (i.e., <code>\` </code>) and store the
+characters in a variable (let’s call it <code>$lexeme</code>).</p>
+</li>
+<li>
+<p>Copy the contents of <code>$lexeme</code> to a temporary value in which all leading
+and trailing whitespace is removed. Let’s call this <code>$temp</code> (this is
+currently not documented but required in the
+<a href="https://github.com/jmespath/jmespath.test/blob/c532a20e3bca635fb6ca248e5e955e1bd146a965/tests/syntax.json#L592-L606">JMESPath compliance tests</a>).</p>
+</li>
+<li>
+<p>If <code>$temp</code> can be parsed as valid JSON, then use the parsed result as the
+value for the literal token.</p>
+</li>
+<li>
+<p>If <code>$temp</code> cannot be parsed as valid JSON, then wrap the contents of
+<code>$lexeme</code> in double quotes and parse the wrapped value as a JSON string,
+making the following expressions equivalent: <code>`foo`</code> == <code>`&quot;foo&quot;`</code>, and
+<code>`[1, ]`</code> == <code>`&quot;[1, ]&quot;`</code>.</p>
+</li>
+</ol>
+<p>It is reasonable to assume that the most common use case for a JSON literal in
+a JMESPath expression is to provide a string value to a function argument or
+to provide a literal string value to a value in a multi-select list or
+multi-select hash. In order to make providing string values easier, it was
+decided that JMESPath should allow the quotes around the string to be elided.</p>
+<p>This proposal posits that allowing quotes to be elided when parsing JSON
+literals should be deprecated in favor of adding a proper string literal rule
+to JMESPath.</p>
+<h2 id="specification-6"><a class="header" href="#specification-6">Specification</a></h2>
+<p>A raw string literal is value that begins and ends with a single quote, does
+not interpret escape characters, and may contain escaped single quotes to
+avoid delimiter collision.</p>
+<h3 id="examples-20"><a class="header" href="#examples-20">Examples</a></h3>
+<p>Here are several examples of valid raw string literals and how they are
+parsed:</p>
+<ul>
+<li>A basic raw string literal, parsed as <code>foo bar</code>:</li>
+</ul>
+<pre><code>'foo bar'
+</code></pre>
+<ul>
+<li>An escaped single quote, parsed as <code>foo'bar</code>:</li>
+</ul>
+<pre><code>'foo\'bar'
+</code></pre>
+<ul>
+<li>A raw string literal that contains new lines:</li>
+</ul>
+<pre><code>'foo
+bar
+baz!'
+</code></pre>
+<p>The above expression would be parsed as a string that contains new lines:</p>
+<pre><code>foo
+baz
+bar!
+</code></pre>
+<ul>
+<li>A raw string literal that contains escape characters,
+parsed as <code>foo\\nbar</code>:</li>
+</ul>
+<pre><code>foo\nbar
+</code></pre>
+<h3 id="abnf"><a class="header" href="#abnf">ABNF</a></h3>
+<p>The following ABNF grammar rules will be added, and is allowed anywhere an
+expression is allowed:</p>
+<pre><code>raw-string        = &quot;'&quot; *raw-string-char &quot;'&quot;
+; The first grouping matches any character other than &quot;\&quot;
+raw-string-char   = (%x20-26 / %x28-5B / %x5D-10FFFF) / raw-string-escape
+raw-string-escape = escape [&quot;'&quot;]
+</code></pre>
+<p>This rule allows any character inside of a raw string, including an escaped
+single quote.</p>
+<p>In addition to adding a <code>raw-string</code> rule, the <code>literal</code> rule in the ABNF
+will be updated to become:</p>
+<pre><code>literal = &quot;`&quot; json-value &quot;`&quot;
+</code></pre>
+<h2 id="impact-2"><a class="header" href="#impact-2">Impact</a></h2>
+<p>The impact to existing users of JMESPath is that the use of a JSON literal
+in which the quotes are elided SHOULD be converted to use the string-literal
+rule of the grammar. Whether or not this conversion is absolutely necessary
+will depend on the specific JMESPath implementation.</p>
+<p>Implementations MAY choose to support the old syntax of allowing elided quotes
+in JSON literal expressions. If an implementation chooses this approach, the
+implementation SHOULD raise some kind of warning to the user to let them know
+of the deprecation and possible incompatibility with other JMESPath
+implementations.</p>
+<p>In order to support this type of variance in JMESPath implementations, all of
+the JSON literal compliance test cases that involve elided quotes MUST be
+removed, and test cases regarding failing on invalid unquoted JSON values MUST
+not be allowed in the compliance test unless placed in a JEP 12 specific
+test suite, allowing implementations that support elided quotes in JSON
+literals to filter out the JEP 12 specific test cases.</p>
+<h2 id="alternative-approaches"><a class="header" href="#alternative-approaches">Alternative approaches</a></h2>
+<p>There are several alternative approaches that could be taken.</p>
+<h3 id="leave-as-is"><a class="header" href="#leave-as-is">Leave as-is</a></h3>
+<p>This is a valid and reasonable suggestion. Leaving JMESPath as-is would avoid
+a breaking change to the grammar and users could continue to use multiple
+escape characters to avoid delimiter collision.</p>
+<p>The goal of this proposal is not to add functionality to JMESPath, but rather
+to make the language easier to use, easier to reason about, and easier to
+implement. As it currently stands, the behavior of JSON parsing is ambiguous
+and requires special casing when implementing a JMESPath parser. It also allows
+for minor differences in implementations due to this ambiguity.</p>
+<p>Take the following example:</p>
+<pre><code>`[1`
+</code></pre>
+<p>One implementation may interpret this expression as a JSON string with the
+string value of <code>&quot;[1&quot;</code>, while other implementations may raise a parse error
+because the first character of the expression appears to be valid JSON.</p>
+<p>By updating the grammar to require valid JSON in the JSON literal token, we can
+remove this ambiguity completely, removing a potential source of inconsistency
+from the various JMESPath implementations.</p>
+<h3 id="disallow-single-quotes-in-a-raw-string"><a class="header" href="#disallow-single-quotes-in-a-raw-string">Disallow single quotes in a raw string</a></h3>
+<p>This proposal states that single quotes in a raw string literal must be escaped
+with a backslash. An alternative approach could be to not allow single quotes
+in a raw string literal. While this would simplify the <code>raw-string</code> grammar
+rule, it would severely limit the usability of the <code>raw-string</code> rule, forcing
+users to use the <code>literal</code> rule.</p>
+<h3 id="use-a-customizable-delimiter"><a class="header" href="#use-a-customizable-delimiter">Use a customizable delimiter</a></h3>
+<p>Several languages allow for a custom delimiter to be placed around a raw
+string. For example, Lua allows for a <a href="https://www.lua.org/manual/5.2/manual.html#3.1">long bracket</a> notation in which raw
+strings are surrounded by <code>[[]]</code> with any number of balanced = characters
+between the brackets:</p>
+<pre><code>[==[foo=bar]==] -- parsed as &quot;foo=bar&quot;
+</code></pre>
+<p>This approach is very flexible and removes the need to escape any characters;
+however, this can not be expressed in a regular grammar. A parser would need to
+keep track of the number of opened delimiters and ensure that it is closed with
+the appropriate number of matching characters.</p>
+<p>The addition of a string literal as described in this JEP does not preclude a
+later addition of a heredoc or delimited style string literal as provided by
+languages like Lua, <a href="https://dlang.org/lex.html#DelimitedString">D</a>,
+<a href="https://en.wikipedia.org/wiki/C%2B%2B11#New_string_literals">C++</a>, etc…</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>0007-filter-expressions - JMESPath Enhancement Proposals</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded affix "><a href="0001-nested-expressions.html">0001-nested-expressions</a></li><li class="chapter-item expanded affix "><a href="0003-functions.html">0003-functions</a></li><li class="chapter-item expanded affix "><a href="0004-pipes.html">0004-pipes</a></li><li class="chapter-item expanded affix "><a href="0005-array-slices.html">0005-array-slices</a></li><li class="chapter-item expanded affix "><a href="0006-improved-identifiers.html">0006-improved-identifiers</a></li><li class="chapter-item expanded affix "><a href="0007-filter-expressions.html" class="active">0007-filter-expressions</a></li><li class="chapter-item expanded affix "><a href="0008-exptype.html">0008-exptype</a></li><li class="chapter-item expanded affix "><a href="0009-improved.filters.html">0009-improved.filters</a></li><li class="chapter-item expanded affix "><a href="0010-slice-projects.html">0010-slice-projects</a></li><li class="chapter-item expanded affix "><a href="0011-let-function.html">0011-let-function</a></li><li class="chapter-item expanded affix "><a href="0012-raw-string-literals.html">0012-raw-string-literals</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">JMESPath Enhancement Proposals</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="filter-expressions"><a class="header" href="#filter-expressions">Filter Expressions</a></h1>
+<ul>
+<li>JEP: 7</li>
+<li>Author: James Saryerwinnie</li>
+<li>Created: 2013-12-16</li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">Abstract</a></h2>
+<p>This JEP proposes grammar modifications to JMESPath to allow for filter
+expressions.  A filtered expression allows list elements to be selected
+based on matching expressions.  A literal expression
+is also introduced (from JEP 3) so that it is possible to match elements
+against literal values.</p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>A common request when querying JSON objects is the ability to select
+elements based on a specific value.  For example, given a JSON object:</p>
+<pre><code>{&quot;foo&quot;: [{&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 1},
+         {&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 2},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 3},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 4}]}
+</code></pre>
+<p>A user may want to select all objects in the <code>foo</code> list that have
+a <code>state</code> key of <code>WA</code>.  There is currently no way to do this
+in JMESPath.  This JEP will introduce a syntax that allows this:</p>
+<pre><code>foo[?state == `WA`]
+</code></pre>
+<p>Additionally, a user may want to project additional expressions onto the values
+matched from a filter expression.  For example, given the data above, select
+the <code>value</code> key from all objects that have a <code>state</code> of <code>WA</code>:</p>
+<pre><code>foo[?state == `WA`].value
+</code></pre>
+<p>would return <code>[1, 2]</code>.</p>
+<h2 id="specification"><a class="header" href="#specification">Specification</a></h2>
+<p>The updated grammar for filter expressions:</p>
+<pre><code>bracket-specifier      = &quot;[&quot; (number / &quot;*&quot;) &quot;]&quot; / &quot;[]&quot;
+bracket-specifier      =/ &quot;[?&quot; list-filter-expression &quot;]&quot;
+list-filter-expression = expression comparator expression
+comparator             = &quot;&lt;&quot; / &quot;&lt;=&quot; / &quot;==&quot; / &quot;&gt;=&quot; / &quot;&gt;&quot; / &quot;!=&quot;
+expression             =/ literal
+literal                = &quot;`&quot; json-value &quot;`&quot;
+literal                =/ &quot;`&quot; 1*(unescaped-literal / escaped-literal) &quot;`&quot;
+unescaped-literal      = %x20-21 /       ; space !
+                            %x23-5A /   ; # - [
+                            %x5D-5F /   ; ] ^ _
+                            %x61-7A     ; a-z
+                            %x7C-10FFFF ; |}~ ...
+escaped-literal        = escaped-char / (escape %x60)
+</code></pre>
+<p>The <code>json-value</code> rule is any valid json value.  While it’s recommended
+that implementations use an existing JSON parser to parse the
+<code>json-value</code>, the grammar is added below for completeness:</p>
+<pre><code>json-value = &quot;false&quot; / &quot;null&quot; / &quot;true&quot; / json-object / json-array /
+             json-number / json-quoted-string
+json-quoted-string = %x22 1*(unescaped-literal / escaped-literal) %x22
+begin-array     = ws %x5B ws  ; [ left square bracket
+begin-object    = ws %x7B ws  ; { left curly bracket
+end-array       = ws %x5D ws  ; ] right square bracket
+end-object      = ws %x7D ws  ; } right curly bracket
+name-separator  = ws %x3A ws  ; : colon
+value-separator = ws %x2C ws  ; , comma
+ws              = *(%x20 /              ; Space
+                    %x09 /              ; Horizontal tab
+                    %x0A /              ; Line feed or New line
+                    %x0D                ; Carriage return
+                   )
+json-object = begin-object [ member *( value-separator member ) ] end-object
+member = quoted-string name-separator json-value
+json-array = begin-array [ json-value *( value-separator json-value ) ] end-array
+json-number = [ minus ] int [ frac ] [ exp ]
+decimal-point = %x2E       ; .
+digit1-9 = %x31-39         ; 1-9
+e = %x65 / %x45            ; e E
+exp = e [ minus / plus ] 1*DIGIT
+frac = decimal-point 1*DIGIT
+int = zero / ( digit1-9 *DIGIT )
+minus = %x2D               ; -
+plus = %x2B                ; +
+zero = %x30                ; 0
+</code></pre>
+<h3 id="comparison-operators"><a class="header" href="#comparison-operators">Comparison Operators</a></h3>
+<p>The following operations are supported:</p>
+<ul>
+<li>
+<p><code>==</code>, tests for equality.</p>
+</li>
+<li>
+<p><code>!=</code>, tests for inequality.</p>
+</li>
+<li>
+<p><code>&lt;</code>, less than.</p>
+</li>
+<li>
+<p><code>&lt;=</code>, less than or equal to.</p>
+</li>
+<li>
+<p><code>&gt;</code>, greater than.</p>
+</li>
+<li>
+<p><code>&gt;=</code>, greater than or equal to.</p>
+</li>
+</ul>
+<p>The behavior of each operation is dependent on the type of each evaluated
+expression.</p>
+<p>The comparison semantics for each operator are defined below based on
+the corresponding JSON type:</p>
+<h4 id="equality-operators"><a class="header" href="#equality-operators">Equality Operators</a></h4>
+<p>For <code>string/number/true/false/null</code> types, equality is an exact match. A
+<code>string</code> is equal to another <code>string</code> if they they have the exact sequence
+of code points.  The literal values <code>true/false/null</code> are only equal to their
+own literal values.  Two JSON objects are equal if they have the same set
+of keys (for each key in the first JSON object there exists a key with equal
+value in the second JSON object).  Two JSON arrays are equal if they have
+equal elements in the same order (given two arrays <code>x</code> and <code>y</code>,
+for each <code>i</code> in <code>x</code>, <code>x[i] == y[i]</code>).</p>
+<h4 id="ordering-operators"><a class="header" href="#ordering-operators">Ordering Operators</a></h4>
+<p>Ordering operators <code>&gt;, &gt;=, &lt;, &lt;=</code> are <strong>only</strong> valid for numbers.
+Evaluating any other type with a comparison operator will yield a <code>null</code>
+value, which will result in the element being excluded from the result list.
+For example, given:</p>
+<pre><code>search('foo[?a&lt;b]', {&quot;foo&quot;: [{&quot;a&quot;: &quot;char&quot;, &quot;b&quot;: &quot;char&quot;},
+                             {&quot;a&quot;: 2, &quot;b&quot;: 1},
+                             {&quot;a&quot;: 1, &quot;b&quot;: 2}]})
+</code></pre>
+<p>The three elements in the foo list are evaluated against <code>a &lt; b</code>.  The first
+element resolves to the comparison <code>&quot;char&quot; &lt; &quot;bar&quot;</code>, and because these types
+are string, the expression results in <code>null</code>, so the first element is not
+included in the result list.  The second element resolves to <code>2 &lt; 1</code>,
+which is <code>false</code>, so the second element is excluded from the result list.
+The third expression resolves to <code>1 &lt; 2</code> which evalutes to <code>true</code>, so the
+third element is included in the list.  The final result of that expression
+is <code>[{&quot;a&quot;: 1, &quot;b&quot;: 2}]</code>.</p>
+<h3 id="filtering-semantics"><a class="header" href="#filtering-semantics">Filtering Semantics</a></h3>
+<p>When a filter expression is matched, the matched element in its entirety is
+included in the filtered response.</p>
+<p>Using the previous example, given the following data:</p>
+<pre><code>{&quot;foo&quot;: [{&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 1},
+         {&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 2},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 3},
+         {&quot;state&quot;: &quot;CA&quot;, &quot;value&quot;: 4}]}
+</code></pre>
+<p>The expression <code>foo[?state == \</code>WA`]` will return the following value:</p>
+<pre><code>[{&quot;state&quot;: &quot;WA&quot;, &quot;value&quot;: 1}]
+</code></pre>
+<h3 id="literal-expressions"><a class="header" href="#literal-expressions">Literal Expressions</a></h3>
+<p>Literal expressions are also added in the JEP, which is essentially a JSON
+value surrounded by the “`” character.  You can escape the “`” character via
+“`”, and if the character “`” appears in the JSON value, it must also be
+escaped.  A simple two pass algorithm in the lexer could first process any
+escaped “`” characters before handing the resulting string to a JSON parser.</p>
+<p>Because string literals are by far the most common type of JSON value, an
+alternate syntax is supported where the starting and ending double quotes
+are not required for strings.  For example:</p>
+<pre><code>`foobar`   -&gt; &quot;foobar&quot;
+`&quot;foobar&quot;` -&gt; &quot;foobar&quot;
+`123`      -&gt; 123
+`&quot;123&quot;`    -&gt; &quot;123&quot;
+`123.foo`  -&gt; &quot;123.foo&quot;
+`true`     -&gt; true
+`&quot;true&quot;`   -&gt; &quot;true&quot;
+`truee`    -&gt; &quot;truee&quot;
+</code></pre>
+<p>Literal expressions aren’t allowed on the right hand side of a subexpression:</p>
+<pre><code>foo[*].`literal`
+</code></pre>
+<p>but they are allowed on the left hand side:</p>
+<pre><code>`{&quot;foo&quot;: &quot;bar&quot;}`.foo
+</code></pre>
+<p>They may also be included in other expressions outside of a filter expressions.
+For example:</p>
+<pre><code>{value: foo.bar, type: `multi-select-hash`}
+</code></pre>
+<h2 id="rationale"><a class="header" href="#rationale">Rationale</a></h2>
+<p>The proposed filter expression syntax was chosen such that there is sufficient
+expressive power for any type of filter one might need to perform while at the
+same time being as minimal as possible.  To help illustrate this, below are a
+few alternate syntax that were considered.</p>
+<p>In the simplest case where one might filter a key based on a literal value,
+a possible filter syntax would be:</p>
+<pre><code>foo[bar == baz]
+</code></pre>
+<p>or in general terms: <code>[identifier comparator literal-value]</code>.  However this
+has several issues:</p>
+<ul>
+<li>
+<p>It is not possible to filter based on two expressions (get all elements whose
+<code>foo</code> key equals its <code>bar</code> key.</p>
+</li>
+<li>
+<p>The literal value is on the right hand side, making it hard to troubleshoot
+if the identifier and literal value are swapped: <code>foo[baz == bar]</code>.</p>
+</li>
+<li>
+<p>Without some identifying token unary filters would not be possible as they
+would be ambiguous.  Is the expression <code>[foo]</code> filtering all elements with
+a foo key with a truth value or is it a multiselect-list selecting the
+<code>foo</code> key from each hash?  Starting a filter expression with a token such
+as <code>[?</code> make it clear that this is a filter expression.</p>
+</li>
+<li>
+<p>This makes the syntax for filtering against literal JSON arrays and objects
+hard to visually parse.  “Filter all elements whose <code>foo</code> key is a single
+list with a single integer value of 2:  <code>[foo == [2]]</code>.</p>
+</li>
+<li>
+<p>Adding literal expressions makes them useful even outside of a filter
+expression.  For example, in a <code>multi-select-hash</code>, you can create
+arbitrary key value pairs:  <code>{a: foo.bar, b: \</code>some string`}`.</p>
+</li>
+</ul>
+<p>This JEP is purposefully minimal.  There are several extensions that can be
+added in future:</p>
+<ul>
+<li>Support any arbitrary expression within the <code>[? ... ]</code>.  This would
+enable constructs such as or expressions within a filter.  This would
+allow unary expressions.</li>
+</ul>
+<p>In order for this to be useful we need to define what corresponds to true and
+false values, e.g. an empty list is a false value.  Additionally, “or
+expressions” would need to change its semantics to branch based on the
+true/false value of an expression instead of whether or not the expression
+evalutes to null.</p>
+<p>This is certainly a direction to take in the future, adding arbitrary
+expressions in a filter would be a backwards compatible change, so it’s not
+part of this JEP.</p>
+<ul>
+<li>Allow filter expressions as top level expressions.  This would potentially
+just return <code>true/false</code> for any value that it matched.</li>
+</ul>
+<p>This might be useful if you can combine this with something that can accept
+a list to use as a mask for filtering other elements.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="0006-improved-identifiers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="0008-exptype.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="0006-improved-identifiers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="0008-exptype.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

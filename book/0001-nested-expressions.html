@@ -1,0 +1,370 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>0001-nested-expressions - JMESPath Enhancement Proposals</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded affix "><a href="0001-nested-expressions.html" class="active">0001-nested-expressions</a></li><li class="chapter-item expanded affix "><a href="0003-functions.html">0003-functions</a></li><li class="chapter-item expanded affix "><a href="0004-pipes.html">0004-pipes</a></li><li class="chapter-item expanded affix "><a href="0005-array-slices.html">0005-array-slices</a></li><li class="chapter-item expanded affix "><a href="0006-improved-identifiers.html">0006-improved-identifiers</a></li><li class="chapter-item expanded affix "><a href="0007-filter-expressions.html">0007-filter-expressions</a></li><li class="chapter-item expanded affix "><a href="0008-exptype.html">0008-exptype</a></li><li class="chapter-item expanded affix "><a href="0009-improved.filters.html">0009-improved.filters</a></li><li class="chapter-item expanded affix "><a href="0010-slice-projects.html">0010-slice-projects</a></li><li class="chapter-item expanded affix "><a href="0011-let-function.html">0011-let-function</a></li><li class="chapter-item expanded affix "><a href="0012-raw-string-literals.html">0012-raw-string-literals</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">JMESPath Enhancement Proposals</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="nested-expressions"><a class="header" href="#nested-expressions">Nested Expressions</a></h1>
+<ul>
+<li>JEP: 1</li>
+<li>Author: Michael Dowling</li>
+<li>Created: 2013-11-27</li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">Abstract</a></h2>
+<p>This document proposes modifying the <a href="https://jmespath.readthedocs.org/en/latest/specification.html#grammar">JMESPath grammar</a>
+to support arbitrarily nested expressions within <code>multi-select-list</code> and
+<code>multi-select-hash</code> expressions.</p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>This JMESPath grammar currently does not allow arbitrarily nested expressions
+within <code>multi-select-list</code> and <code>multi-select-hash</code> expressions. This
+prevents nested branching expressions, nested <code>multi-select-list</code> expressions
+within other multi expressions, and nested <code>or-expressions</code> within any
+multi-expression.</p>
+<p>By allowing any expression to be nested within a <code>multi-select-list</code> and
+<code>multi-select-hash</code> expression, we can trim down several grammar rules and
+provide customers with a much more flexible expression DSL.</p>
+<p>Supporting arbitrarily nested expressions within other expressions requires:</p>
+<ul>
+<li>
+<p>Updating the grammar to remove <code>non-branched-expr</code></p>
+</li>
+<li>
+<p>Updating compliance tests to add various permutations of the grammar to
+ensure implementations are compliant.</p>
+</li>
+<li>
+<p>Updating the JMESPath documentation to reflect the ability to arbitrarily
+nest expressions.</p>
+</li>
+</ul>
+<h2 id="nested-expression-examples"><a class="header" href="#nested-expression-examples">Nested Expression Examples</a></h2>
+<h3 id="nested-branch-expressions"><a class="header" href="#nested-branch-expressions">Nested branch expressions</a></h3>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: [
+            {
+                &quot;bar&quot;: &quot;abc&quot;
+            }, {
+                &quot;bar&quot;: &quot;def&quot;
+            }
+        ],
+        &quot;qux&quot;: [&quot;zero&quot;]
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz[\*].bar, qux[0]]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    [
+        &quot;abc&quot;,
+        &quot;def&quot;
+    ],
+    &quot;zero&quot;
+]
+</code></pre>
+<h3 id="nested-branch-expressions-with-nested-mutli-select"><a class="header" href="#nested-branch-expressions-with-nested-mutli-select">Nested branch expressions with nested mutli-select</a></h3>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: [
+            {
+                &quot;bar&quot;: &quot;a&quot;,
+                &quot;bam&quot;: &quot;b&quot;,
+                &quot;boo&quot;: &quot;c&quot;
+            }, {
+                &quot;bar&quot;: &quot;d&quot;,
+                &quot;bam&quot;: &quot;e&quot;,
+                &quot;boo&quot;: &quot;f&quot;
+            }
+        ],
+        &quot;qux&quot;: [&quot;zero&quot;]
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz[\*].[bar, boo], qux[0]]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    [
+        [
+            &quot;a&quot;,
+            &quot;c&quot;
+        ],
+        [
+            &quot;d&quot;,
+            &quot;f&quot;
+        ]
+    ],
+    &quot;zero&quot;
+]
+</code></pre>
+<h3 id="nested-or-expressions"><a class="header" href="#nested-or-expressions">Nested or expressions</a></h3>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: [
+            {
+                &quot;bar&quot;: &quot;a&quot;,
+                &quot;bam&quot;: &quot;b&quot;,
+                &quot;boo&quot;: &quot;c&quot;
+            }, {
+                &quot;bar&quot;: &quot;d&quot;,
+                &quot;bam&quot;: &quot;e&quot;,
+                &quot;boo&quot;: &quot;f&quot;
+            }
+        ],
+        &quot;qux&quot;: [&quot;zero&quot;]
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz[\*].not_there || baz[\*].bar, qux[0]]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    [
+        &quot;a&quot;,
+        &quot;d&quot;
+    ],
+    &quot;zero&quot;
+]
+</code></pre>
+<h3 id="no-breaking-changes"><a class="header" href="#no-breaking-changes">No breaking changes</a></h3>
+<p>Because there are no breaking changes from this modification, existing
+multi-select expressions will still work unchanged:</p>
+<p>Given:</p>
+<pre><code class="language-json">{
+    &quot;foo&quot;: {
+        &quot;baz&quot;: {
+            &quot;abc&quot;: 123,
+            &quot;bar&quot;: 456
+        }
+    }
+}
+</code></pre>
+<p>With: <code>foo.[baz, baz.bar]</code></p>
+<p>Result:</p>
+<pre><code class="language-json">[
+    {
+        &quot;abc&quot;: 123,
+        &quot;bar&quot;: 456
+    },
+    456
+]
+</code></pre>
+<h2 id="modified-grammar"><a class="header" href="#modified-grammar">Modified Grammar</a></h2>
+<p>The following modified JMESPath grammar supports arbitrarily nested expressions
+and is specified using ABNF, as described in <a href="https://tools.ietf.org/html/rfc4234">RFC4234</a></p>
+<pre><code>expression        = sub-expression / index-expression / or-expression / identifier / &quot;*&quot;
+expression        =/ multi-select-list / multi-select-hash
+sub-expression    = expression &quot;.&quot; expression
+or-expression     = expression &quot;||&quot; expression
+index-expression  = expression bracket-specifier / bracket-specifier
+multi-select-list = &quot;[&quot; ( expression *( &quot;,&quot; expression ) ) &quot;]&quot;
+multi-select-hash = &quot;{&quot; ( keyval-expr *( &quot;,&quot; keyval-expr ) ) &quot;}&quot;
+keyval-expr       = identifier &quot;:&quot; expression
+bracket-specifier = &quot;[&quot; (number / &quot;*&quot;) &quot;]&quot;
+number            = [-]1*digit
+digit             = &quot;1&quot; / &quot;2&quot; / &quot;3&quot; / &quot;4&quot; / &quot;5&quot; / &quot;6&quot; / &quot;7&quot; / &quot;8&quot; / &quot;9&quot; / &quot;0&quot;
+identifier        = 1*char
+identifier        =/ quote 1*(unescaped-char / escaped-quote) quote
+escaped-quote     = escape quote
+unescaped-char    = %x30-10FFFF
+escape            = %x5C   ; Back slash: \
+quote             = %x22   ; Double quote: '&quot;'
+char              = %x30-39 / ; 0-9
+                    %x41-5A / ; A-Z
+                    %x5F /    ; _
+                    %x61-7A / ; a-z
+                    %x7F-10FFFF
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="0003-functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="0003-functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
