@@ -27,7 +27,7 @@ jobs:
         git config user.email ""
         cd gh-pages
         rm -rf *
-        cp -r ../build/book/ .
+        cp -Tr ../build/book/ .
         git add .
         git commit -m "Deploy $GITHUB_SHA to gh-pages"
         git push --force --set-upstream origin gh-pages
