@@ -70,7 +70,7 @@ can also use that issue to gauge interest in the feature.
      that wants to continue working on the JEP.
 
 8. Once the JEP is approved by the JMESPath core team the pull request
-   will be merged.
+   will be merged and the JEP will be assigned a number N.
 
 9. The relevant parts of the "Specification" section will be added to the
    JMESPath specification, and the tests cases from the "Test Cases" section
@@ -78,6 +78,11 @@ can also use that issue to gauge interest in the feature.
    [jmespath.test](https://github.com/jmespath/jmespath.test) repo.
 
 10. JMESPath libraries can now implement the accepted JEP.
+
+11. In rare circumstances, JEPs will be superceded by newer versions of a JEP.
+    Those updated JEPs will have an amended letter sequence added as a suffix to the original JEP#.
+    The sequence follows the 26 US-ASCII alphabetical order 'a', 'b', to 'z'.
+    It then follows with 'aa', 'ab', to 'az' and so on.
 
 ### Tenets of JMESPath
 
