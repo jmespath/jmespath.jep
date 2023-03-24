@@ -152,6 +152,13 @@ Examples of this new syntax:
 * `let $foo = baz[0] in bar[? baz == $foo ] | [0]`
 * `let $a = b, $c = d in bar[*].[$a, $c, foo, bar]`
 
+It's worth noting that this is the first JEP to introduce keywords into the
+language: the `let` and `in` keywords.  These are not reserved keywords, these
+words can continue to be used as identifiers in expressions.  There are no
+backwards incompatible changes being proposed with this JEP. The grammar rules
+unambiguously describe whether ``let`` is meant to be interpreted as a keyword
+or as an identifier (often referred to as contextual keywords).
+
 ### New evaluation rules
 
 Let expressions are evaluated as follows.
@@ -297,6 +304,27 @@ This was considered too verbose for such a common use case of defining
 variables.  It makes sense that a dedicated, more succinct syntax was
 preferred, as many languages have a dedicated `let` syntax for defining
 variables.
+
+#### Backwards compatibility concern
+
+Languages will often design keywords as reserved words that can't be used
+as variable names or other identifiers.  This helps to provide clarity
+because the reader knows that the keyword can only have a single meaning.
+This is possible to do when you first design the language, or if you are
+willing to introduce breaking changes into the language.  JMESPath instead
+takes an alternate approach of introducing keywords that can be inferred
+from the context in which they're used, which is known as contextual
+keywords.  There are other languages that also take this approach,
+`such as C# <https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/#contextual-keywords>`__.
+
+In order to do this, the updated grammar rules must be chosen to avoid any
+ambiguity when parsing expressions.  This may limit the syntax and location
+where the new keywords could be used, so the tradeoffs of adding a new keyword
+must be considered carefully.
+
+We should be wary of adding new keywords to JMESPath, and only do so when
+there is a strong rationale for doing so. ``let`` is one such case, as detailed
+in this section.
 
 ### Adding a sigil for variable references
 
@@ -446,7 +474,7 @@ Basic expressions
       result: "baz"
     - expression: "let $foo = foo.bar in [$foo, $foo]"
       result: ["baz", "baz"]
-    - command: "Multiple assignments"
+    - comment: "Multiple assignments"
       expression: "let $foo = 'foo', $bar = 'bar' in [$foo, $bar]"
       result: ["foo", "bar"]
 # Nested expressions
@@ -463,6 +491,30 @@ Basic expressions
     - comment: Bindings only visible within expression clause
       expression: "let $a = 'top-a' in let $a = 'in-a', $b = $a in $b"
       result: "top-a"
+# Let as valid identifiers
+- given:
+    let:
+      let: let-val
+      in: in-val
+  cases:
+    - expression: "let $let = let in {let: let, in: $let}"
+      result:
+        let:
+          let: let-val
+          in: in-val
+        in:
+          let: let-val
+          in: in-val
+    - expression: "let $let = 'let' in { let: let, in: $let }"
+      result:
+        let:
+          let: let-val
+          in: in-val
+        in: "let"
+    - expression: "let $let = 'let' in { let: 'let', in: $let }"
+      result:
+        let: "let"
+        in: "let"
 # Projections stop
 - given:
     foo: [[0, 1], [2, 3], [4, 5]]
