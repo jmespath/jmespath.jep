@@ -51,7 +51,7 @@ result = "hello"
 ```
 
 The end result of evaluating this expression is `"hello"`.  Note that each
-step changes that values that are accessible to the current expression being
+step changes the values that are accessible to the current expression being
 evaluated.  In "Step 2", it is not possible for the expression to reference
 the value of `"baz"` in the current element of the previous step, "Step 1".
 
@@ -194,7 +194,7 @@ to offer a "strict" compilation mode that a user can opt into, but MUST support
 triggering an `undefined-variable` error only when the `variable-ref` is
 evaluated.
 
-Note that the when evaluating the `bindings` rule, the expression bound
+Note that when evaluating the `bindings` rule, the expression bound
 to a variable is completely evaluated before binding to the variable.
 Any references to the variable are replaced with the result of this evaluation,
 the expression is not re-evaluated.  This is worth clarifying specifically
