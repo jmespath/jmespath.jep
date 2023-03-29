@@ -198,7 +198,7 @@ Note that when evaluating the `bindings` rule, the expression bound
 to a variable is completely evaluated before binding to the variable.
 Any references to the variable are replaced with the result of this evaluation,
 the expression is not re-evaluated.  This is worth clarifying specifically
-for projections (wildcard expressions, the flatten operator,
+for projections (wildcard expressions, the flatten operator, slices and
 filter expressions).  If the expression being bound is a projection, the
 evaluation of this expression effectively stops the projection.  This means
 subsequent references using the `variable-ref` MUST NOT continue projecting
@@ -248,7 +248,7 @@ search(
 ) -> [["inner1", "topval", "shadow"], ["inner2", "topval", "shadow"]]
 ```
 
-Errors cases.
+Error cases.
 
 ```
 search($foo, {}) -> <error: undefined-variable>
@@ -359,7 +359,7 @@ syntax similar to Javascript's object destructuring:
 let {$foo, $bar} = @ in ...
 ```
 
-There are several reason this alternative was not chosen:
+There are several reasons this alternative was not chosen:
 
 * This requires multiple assignments to come from an object type, which
   might require a user to unnecessarily create a multi-select-hash in order
@@ -449,7 +449,7 @@ def wait(user_params):
 wait({"GroupNames": ["group1", "group2", "group3"]})
 ```
 
-This JEP does not require that implementation provide this capability of
+This JEP does not require that implementations provide this capability of
 passing in an initial scope, but by requiring that undefined variable
 references are runtime errors it enables implementations to provide this
 capability.  Implementations are also free to provide an opt-in "strict"
