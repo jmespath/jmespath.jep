@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded affix "><a href="0001-nested-expressions.html">0001-nested-expressions</a></li><li class="chapter-item expanded affix "><a href="0003-functions.html">0003-functions</a></li><li class="chapter-item expanded affix "><a href="0004-pipes.html">0004-pipes</a></li><li class="chapter-item expanded affix "><a href="0005-array-slices.html">0005-array-slices</a></li><li class="chapter-item expanded affix "><a href="0006-improved-identifiers.html">0006-improved-identifiers</a></li><li class="chapter-item expanded affix "><a href="0007-filter-expressions.html">0007-filter-expressions</a></li><li class="chapter-item expanded affix "><a href="0008-exptype.html">0008-exptype</a></li><li class="chapter-item expanded affix "><a href="0009-improved.filters.html">0009-improved.filters</a></li><li class="chapter-item expanded affix "><a href="0010-slice-projects.html">0010-slice-projects</a></li><li class="chapter-item expanded affix "><a href="0011-let-function.html">0011-let-function</a></li><li class="chapter-item expanded affix "><a href="0012-raw-string-literals.html">0012-raw-string-literals</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded affix "><a href="0001-nested-expressions.html">0001-nested-expressions</a></li><li class="chapter-item expanded affix "><a href="0003-functions.html">0003-functions</a></li><li class="chapter-item expanded affix "><a href="0004-pipes.html">0004-pipes</a></li><li class="chapter-item expanded affix "><a href="0005-array-slices.html">0005-array-slices</a></li><li class="chapter-item expanded affix "><a href="0006-improved-identifiers.html">0006-improved-identifiers</a></li><li class="chapter-item expanded affix "><a href="0007-filter-expressions.html">0007-filter-expressions</a></li><li class="chapter-item expanded affix "><a href="0008-exptype.html">0008-exptype</a></li><li class="chapter-item expanded affix "><a href="0009-improved.filters.html">0009-improved.filters</a></li><li class="chapter-item expanded affix "><a href="0010-slice-projects.html">0010-slice-projects</a></li><li class="chapter-item expanded affix "><a href="0011-let-function.html">0011-let-function</a></li><li class="chapter-item expanded affix "><a href="0012-raw-string-literals.html">0012-raw-string-literals</a></li><li class="chapter-item expanded affix "><a href="0018-lexical-scope.html">0018-lexical-scope</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -2579,6 +2579,498 @@ the appropriate number of matching characters.</p>
 later addition of a heredoc or delimited style string literal as provided by
 languages like Lua, <a href="https://dlang.org/lex.html#DelimitedString">D</a>,
 <a href="https://en.wikipedia.org/wiki/C%2B%2B11#New_string_literals">C++</a>, etc…</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lexical-scoping-1"><a class="header" href="#lexical-scoping-1">Lexical Scoping</a></h1>
+<ul>
+<li>JEP: 18</li>
+<li>Author: @jamesls</li>
+<li>Created: 2023-03-21</li>
+</ul>
+<h2 id="abstract-11"><a class="header" href="#abstract-11">Abstract</a></h2>
+<p>This JEP proposes the introduction of lexical scoping using a new
+<code>let</code> expression.  You can now bind variables that are evaluated in the
+context of a given lexical scope.  This enables queries that can refer to
+elements defined outside of their current element, which is not currently
+possible.  This JEP supercedes JEP 11, which proposed similar functionality
+through a <code>let()</code> function.</p>
+<h2 id="motivation-11"><a class="header" href="#motivation-11">Motivation</a></h2>
+<p>A JMESPath expression is always evaluated in the context of a current
+element, which can be explicitly referred to via the <code>@</code> token.  The
+current element changes as expressions are evaluated.  For example,
+suppose we had the expression <code>foo.bar[0]</code> that we want to evalute against
+an input document of:</p>
+<pre><code class="language-json">{&quot;foo&quot;: {&quot;bar&quot;: [&quot;hello&quot;, &quot;world&quot;]}, &quot;baz&quot;: &quot;baz&quot;}
+</code></pre>
+<p>The expression, and the associated current element are evaluated as follows:</p>
+<pre><code># Start
+expression = foo.bar[0]
+@ = {&quot;foo&quot;: {&quot;bar&quot;: [&quot;hello&quot;, &quot;world&quot;]}, &quot;baz&quot;: &quot;baz&quot;}
+
+# Step 1
+expression = foo
+@ = {&quot;foo&quot;: {&quot;bar&quot;: [&quot;hello&quot;, &quot;world&quot;]}, &quot;baz&quot;: &quot;baz&quot;}
+result = {&quot;bar&quot;: [&quot;hello&quot;, &quot;world&quot;]}
+
+# Step 2
+expression = bar
+@ = {&quot;bar&quot;: [&quot;hello&quot;, &quot;world&quot;]}
+result = [&quot;hello&quot;, &quot;world&quot;]
+
+# Step 3
+expression = [0]
+@ = [&quot;hello&quot;, &quot;world&quot;]
+result = &quot;hello&quot;
+</code></pre>
+<p>The end result of evaluating this expression is <code>&quot;hello&quot;</code>.  Note that each
+step changes the values that are accessible to the current expression being
+evaluated.  In &quot;Step 2&quot;, it is not possible for the expression to reference
+the value of <code>&quot;baz&quot;</code> in the current element of the previous step, &quot;Step 1&quot;.</p>
+<p>This ability to reference variables in a parent scope is a serious limitation
+of JMESPath, and anecdotally is one of the commonly requested features
+of the language.  Below are examples of input documents and the desired output
+documents that aren't possible to create with the current version of
+JMESPath:</p>
+<pre><code>Input:
+
+[
+  {&quot;home_state&quot;: &quot;WA&quot;,
+   &quot;states&quot;: [
+     {&quot;name&quot;: &quot;WA&quot;, &quot;cities&quot;: [&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;]},
+     {&quot;name&quot;: &quot;CA&quot;, &quot;cities&quot;: [&quot;Los Angeles&quot;, &quot;San Francisco&quot;]},
+     {&quot;name&quot;: &quot;NY&quot;, &quot;cities&quot;: [&quot;New York City&quot;, &quot;Albany&quot;]}
+   ]
+  },
+  {&quot;home_state&quot;: &quot;NY&quot;,
+   &quot;states&quot;: [
+     {&quot;name&quot;: &quot;WA&quot;, &quot;cities&quot;: [&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;]},
+     {&quot;name&quot;: &quot;CA&quot;, &quot;cities&quot;: [&quot;Los Angeles&quot;, &quot;San Francisco&quot;]},
+     {&quot;name&quot;: &quot;NY&quot;, &quot;cities&quot;: [&quot;New York City&quot;, &quot;Albany&quot;]}
+   ]
+  }
+]
+
+
+(for each list in &quot;states&quot;, select the list of cities associated
+ with the state defined in the &quot;home_state&quot; key)
+
+Output:
+
+[
+  [&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;],
+  [&quot;New York City&quot;, &quot;Albany&quot;]
+]
+</code></pre>
+<pre><code>Input:
+{&quot;imageDetails&quot;: [
+  {
+    &quot;repositoryName&quot;: &quot;org/first-repo&quot;,
+    &quot;imageTags&quot;: [&quot;latest&quot;, &quot;v1.0&quot;, &quot;v1.2&quot;],
+    &quot;imageDigest&quot;: &quot;sha256:abcd&quot;
+  },
+  {
+    &quot;repositoryName&quot;: &quot;org/second-repo&quot;,
+    &quot;imageTags&quot;: [&quot;v2.0&quot;, &quot;v2.2&quot;],
+    &quot;imageDigest&quot;: &quot;sha256:efgh&quot;
+  },
+]}
+
+
+(create a list of pairs containing an image tag and its associated repo name)
+
+Output:
+
+[
+  [&quot;latest&quot;, &quot;org/first-repo&quot;],
+  [&quot;v1.0&quot;, &quot;org/first-repo&quot;],
+  [&quot;v1.2&quot;, &quot;org/first-repo&quot;],
+  [&quot;v2.0&quot;, &quot;org/second-repo&quot;],
+  [&quot;v2.2&quot;, &quot;org/second-repo&quot;],
+]
+</code></pre>
+<p>In order to support these queries we need some way for an expression to
+reference values that exist outside of its implicit current element.</p>
+<h2 id="specification-7"><a class="header" href="#specification-7">Specification</a></h2>
+<p>A new &quot;let expression&quot; is added to the language.  The expression has the
+format: <code>let &lt;bindings&gt; in &lt;expr&gt;</code>.  The updated grammar rules in ABNF are:</p>
+<pre><code>let-expression = &quot;let&quot; bindings &quot;in&quot; expression
+bindings = variable-binding *( &quot;,&quot; variable-binding )
+variable-binding = variable-ref &quot;=&quot; expression
+variable-ref = &quot;$&quot; unquoted-string
+</code></pre>
+<p>The <code>let-expression</code> and <code>variable-ref</code> rule are also added as a new expression
+types:</p>
+<pre><code>expression =/ let-expression / variable-ref
+</code></pre>
+<p>Examples of this new syntax:</p>
+<ul>
+<li><code>let $foo = bar in {a: myvar, b: $foo}</code></li>
+<li><code>let $foo = baz[0] in bar[? baz == $foo ] | [0]</code></li>
+<li><code>let $a = b, $c = d in bar[*].[$a, $c, foo, bar]</code></li>
+</ul>
+<p>It's worth noting that this is the first JEP to introduce keywords into the
+language: the <code>let</code> and <code>in</code> keywords.  These are not reserved keywords, these
+words can continue to be used as identifiers in expressions.  There are no
+backwards incompatible changes being proposed with this JEP. The grammar rules
+unambiguously describe whether <code>let</code> is meant to be interpreted as a keyword
+or as an identifier (often referred to as contextual keywords).</p>
+<h3 id="new-evaluation-rules"><a class="header" href="#new-evaluation-rules">New evaluation rules</a></h3>
+<p>Let expressions are evaluated as follows.</p>
+<p>Given the rule <code>&quot;let&quot; bindings &quot;in&quot; expression</code>, the <code>bindings</code> rule is
+processed first.  Each <code>variable-binding</code> within the <code>bindings</code> rule defines
+the name of a variable and an expression. Each expression is evaluated, and the
+result of this evaluation is then bound to the associated variable name.</p>
+<p>Once all the <code>variable-binding</code> rules have been processed, the associated
+<code>expression</code> clause of the let expression is then evaluated.  During the
+evaluation of the expression, any references, via the <code>variable-ref</code> rule, to a
+variable name will evaluate to the value bound to the name.  Once the
+associated expression has been evaluated, the let expression itself evaluates
+to the result of this expression.  After the let expression has been evaluated,
+the variable bindings associated with the let expression are no longer valid.
+This is also referred to as the visibility of a binding; the bindings of a
+let expression are only visible during the evaluation of the <code>expression</code>
+clause of the let expression.</p>
+<p>When evaluating the <code>bindings</code> rule, a <code>variable-binding</code> for a variable name
+that is already visible in the current scope will replace the existing binding
+when evaluating the <code>expression</code> clause of the let expression.  This means in
+the context of nested let expressions (and consequently nested scopes), a
+variable in an inner scope can shadow a variable defined in an outer scope.</p>
+<p>If a <code>variable-ref</code> references a variable that has not been defined, the
+evaluation of that <code>variable-ref</code> will trigger an <code>undefined-variable</code> error.
+This error MUST occur when the expression is evaluated and not at compile
+time.  This is to enable implementations to define an implementation specific
+mechanism for defining an initial or &quot;global&quot; scope.  Implementations are free
+to offer a &quot;strict&quot; compilation mode that a user can opt into, but MUST support
+triggering an <code>undefined-variable</code> error only when the <code>variable-ref</code> is
+evaluated.</p>
+<p>Note that when evaluating the <code>bindings</code> rule, the expression bound
+to a variable is completely evaluated before binding to the variable.
+Any references to the variable are replaced with the result of this evaluation,
+the expression is not re-evaluated.  This is worth clarifying specifically
+for projections (wildcard expressions, the flatten operator, slices and
+filter expressions).  If the expression being bound is a projection, the
+evaluation of this expression effectively stops the projection.  This means
+subsequent references using the <code>variable-ref</code> MUST NOT continue projecting
+to child expressions.  For example, this is the behavior for a projection:</p>
+<pre><code>search(
+  foo[*][0]
+  {&quot;foo&quot;: [[0, 1], [2, 3], [4, 5]]}
+) -&gt; [0, 2, 4]
+</code></pre>
+<p>And this is the behavior when assigning a variable to a projection:</p>
+<pre><code>search(
+  let $foo = foo[*]
+  in
+    $foo[0]
+  {&quot;foo&quot;: [[0, 1], [2, 3], [4, 5]]}
+) -&gt; [0, 1]
+</code></pre>
+<p>In the first example, the <code>[0]</code> expression is projected onto each element
+in the list, returning the first element of each sub list: <code>[0, 2, 4]</code>.
+In the second example, the <code>foo[*]</code> expression is evaluated to
+<code>[[0, 1], [2, 3], [4, 5]]</code> and assigned to the variable <code>$foo</code>.  The
+projection expression evaluation is complete, and the projection is stopped.
+Evaluating the expression <code>$foo[0]</code> results in the variable <code>$foo</code> being
+replaced with its bound value of <code>[[0, 1], [2, 3], [4, 5]]</code>, so the entire
+expression becomes <code>[[0, 1], [2, 3], [4, 5]][0]</code>, which returns the first
+element in the list which is <code>[0, 1]</code>.</p>
+<h3 id="examples-21"><a class="header" href="#examples-21">Examples</a></h3>
+<p>Basic examples demonstrating core functionality.</p>
+<pre><code>search(let $foo = foo in $foo, {&quot;foo&quot;: &quot;bar&quot;}) -&gt; &quot;bar&quot;
+search(let $foo = foo.bar in $foo, {&quot;foo&quot;: {&quot;bar&quot;: &quot;baz&quot;}}) -&gt; &quot;baz&quot;
+search(let $foo = foo in [$foo, $foo], {&quot;foo&quot;: &quot;bar&quot;}) -&gt; [&quot;bar&quot;, &quot;bar&quot;]
+</code></pre>
+<p>Nested bindings.</p>
+<pre><code>search(
+  let $a = a
+  in
+    b[*].[a, $a, let $a = 'shadow' in $a],
+  {&quot;a&quot;: &quot;topval&quot;, &quot;b&quot;: [{&quot;a&quot;: &quot;inner1&quot;}, {&quot;a&quot;: &quot;inner2&quot;}]}
+) -&gt; [[&quot;inner1&quot;, &quot;topval&quot;, &quot;shadow&quot;], [&quot;inner2&quot;, &quot;topval&quot;, &quot;shadow&quot;]]
+</code></pre>
+<p>Error cases.</p>
+<pre><code>search($foo, {}) -&gt; &lt;error: undefined-variable&gt;
+search([let $foo = 'bar' in $foo, $foo], {}) -&gt; &lt;error: undefined-variable&gt;
+</code></pre>
+<h2 id="rationale-6"><a class="header" href="#rationale-6">Rationale</a></h2>
+<p><em>Note: see <a href="https://github.com/jmespath/jmespath.site/pull/6#issuecomment-1464113092">previous discussion</a>
+for more background.</em></p>
+<h3 id="introducing-keywords-into-the-language"><a class="header" href="#introducing-keywords-into-the-language">Introducing keywords into the language</a></h3>
+<p>The let expression proposed in this JEP is based off of similar constructs
+in existing programming languages:</p>
+<ul>
+<li><a href="http://learnyouahaskell.com/syntax-in-functions#let-it-be">Haskell</a></li>
+<li><a href="https://clojuredocs.org/clojure.core/let">Clojure</a></li>
+<li><a href="https://v2.ocaml.org/manual/expr.html#sss:expr-localdef">OCaml</a></li>
+</ul>
+<p>It was important to borrow from existing syntax and semantics.
+Lexical scoping is a familiar concept to developers, so care was
+taken to be consistent with the mental model that developers already have.</p>
+<p>Alternatives were considered that avoided introducing new keywords into
+the language (this proposal adds the first keyword to the language).  These
+included some variation that approximated defining an anonymous function
+with arguments, e.g.:</p>
+<pre><code>|foo, bar| =&gt; {$foo: a, $bar: b}
+</code></pre>
+<p>The reason for not going with this approach is that adding the ability
+to define functions is a large feature that will take considerable effort
+to design.  This may be something to consider in the future, but it's
+a larger scope than introducing lexical scoping and made the most sense
+to address separately.  We'd also need to introduce not only defining
+anonymous functions with arguments, but also a mechanism to invoke
+such functions.  You can then create lexical scope by defining a function
+and immediately invoking it.  For example, in javascript it would look
+like this:</p>
+<pre><code class="language-typescript">(({x, y}) =&gt; ([x, y]))(
+    {x: &quot;foo&quot;, y: &quot;bar&quot;}
+);
+</code></pre>
+<p>This was considered too verbose for such a common use case of defining
+variables.  It makes sense that a dedicated, more succinct syntax was
+preferred, as many languages have a dedicated <code>let</code> syntax for defining
+variables.</p>
+<h4 id="backwards-compatibility-concern"><a class="header" href="#backwards-compatibility-concern">Backwards compatibility concern</a></h4>
+<p>Languages will often design keywords as reserved words that can't be used
+as variable names or other identifiers.  This helps to provide clarity
+because the reader knows that the keyword can only have a single meaning.
+This is possible to do when you first design the language, or if you are
+willing to introduce breaking changes into the language.  JMESPath instead
+takes an alternate approach of introducing keywords that can be inferred
+from the context in which they're used, which is known as contextual
+keywords.  There are other languages that also take this approach,
+<code>such as C# &lt;https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/#contextual-keywords&gt;</code>__.</p>
+<p>In order to do this, the updated grammar rules must be chosen to avoid any
+ambiguity when parsing expressions.  This may limit the syntax and location
+where the new keywords could be used, so the tradeoffs of adding a new keyword
+must be considered carefully.</p>
+<p>We should be wary of adding new keywords to JMESPath, and only do so when
+there is a strong rationale for doing so. <code>let</code> is one such case, as detailed
+in this section.</p>
+<h3 id="adding-a-sigil-for-variable-references"><a class="header" href="#adding-a-sigil-for-variable-references">Adding a sigil for variable references</a></h3>
+<p>One of the changes from an earlier proposal of this feature (JEP-11) is that
+this proposal adds explicit syntax for variable references via the <code>$foo</code>
+syntax.  The lookup process between the expression <code>foo</code> and <code>$foo</code> are
+fundamentally different types of lookup.  One searches through values
+from the implicit current element and one is a lookup in the lexical scope.</p>
+<p>Not having a syntactic difference creates ambiguity regarding the intended
+type of lookup by the user.  This also prevents defining where scoped lookups
+are allowed through the grammar.  For example, in the expression <code>foo.bar</code>
+it is unclear whether <code>bar</code> refers to a lookup in the current element or the
+lexical scope.  Having explicit syntax removes this ambiguity, allowing a user
+to explicitly state their intent.  It also enables distinct error conditions.</p>
+<p>A reference to a non-existent variable is an error, as the user provided
+explicit syntax stating that they expect the variable to exist.  The variable
+not existing is result of the user not binding the variable name at some
+point, which is an error.  Conversely, an expression evaluated against the
+current element results in <code>null</code> if the key does not exist.  This is
+because the query is being evaluated against an input JSON document, and
+we don't know what keys may or may not be present.</p>
+<h2 id="multiple-assignments-with-commas"><a class="header" href="#multiple-assignments-with-commas">Multiple assignments with commas</a></h2>
+<p>Assigning multiple variables is done through comma separated <code>variable-binding</code>
+rules, e.g. <code>$foo = foo, $bar = bar</code>.  An alternative considered was to use
+syntax similar to Javascript's object destructuring:</p>
+<pre><code>let {$foo, $bar} = @ in ...
+</code></pre>
+<p>There are several reasons this alternative was not chosen:</p>
+<ul>
+<li>This requires multiple assignments to come from an object type, which
+might require a user to unnecessarily create a multi-select-hash in order
+to assign multiple variables.</li>
+<li>Destructuring binds to top level values in an object, and does not allow
+for a single binding to evaluate to an expression, without having to again
+preconstruct that value via a multi-select-hash.</li>
+<li>Object destructuring is an additive change.  Nothing in this JEP precludes
+this addition in the future, e.g.:</li>
+</ul>
+<pre><code>let {$foo, $bar} = @ in ...
+let {$foo, $bar} = @, $baz = a.b.c in ...
+</code></pre>
+<h2 id="unbound-values-error-at-evaluation-time-not-at-compile-time"><a class="header" href="#unbound-values-error-at-evaluation-time-not-at-compile-time">Unbound values error at evaluation time not at compile time</a></h2>
+<p>The JEP also requires that unbound values error at evaluation time, not
+at compile time.  This enables implementations to bind an initial (global)
+scope when a query is evaluated.  This is something that other query languages
+provide, and is useful to define fixed queries that only vary by the value
+of specific variables.  We'll look at a few examples.</p>
+<p>First, consider a command line utility, let's called it <code>jp</code>, that accepts a
+path to a file containing a JMESPath query and reads an input JSON document
+through stdin.  This command line utility could offer a <code>--params</code> option that
+allows a user to pass in an initial scope.  For example:</p>
+<p><em>myquery.jmespath</em></p>
+<pre><code>results[*].[name, uuid, $hostname]
+</code></pre>
+<p>A user could then use this CLI to retrieve JSON data and filter it:</p>
+<pre><code>$ curl https://myapi/info/$HOSTNAME | \
+    jp --filename myquery.jmespath --params '{&quot;hostname&quot;: &quot;$HOSTNAME&quot;}'
+</code></pre>
+<p>In this case the JMESPath expression does not need to change and can be
+shared with other people, and still include data that's specific to your
+machine.</p>
+<p>Another example would be where JMESPath is used in some shared definition file.
+Suppose we had a file that defines how to make an API request, and specifies a
+condition we'd like to meet based on the output response.  We want to describe
+that the expected output depends on the input provided.  This is how we can
+describe this:</p>
+<pre><code class="language-json">{&quot;GroupActive&quot;: {
+   &quot;operation&quot;: &quot;DescribeGroups&quot;,
+   &quot;acceptors&quot;: {
+     &quot;argument&quot;: &quot;Response[].[length(Instances[?State=='Active']) == length($params.GroupNames)&quot;,
+     &quot;matcher&quot;: &quot;path&quot;
+   }
+}}
+</code></pre>
+<p>This is saying that we should invoke the <code>DescribeGroups</code> operations with a
+list of group names, and that we want to check that the response contains a
+list of <code>Instances</code> with <code>State == 'Active'</code> whose length matches the length of
+the params group names.  You could now bind the user provided params as the
+initial scope of <code>{&quot;params&quot;: inputParams}</code> and code generate something like
+this (using the python JMESPath library in this example):</p>
+<pre><code class="language-python">def wait(user_params):
+  response = client.DescribeGroups(user_params)
+  expected = jmespath.compile(
+    &quot;Response[].[length(Instances[?State=='Active']) &quot;
+    &quot;== length($params.GroupNames)&quot;
+  )
+  result = expected.search(
+    response,
+    # This is the new part, give queries access to the user params
+    # via the $params variable.
+    scope={'params': user_params},
+)
+  if result:
+    return &quot;SomeSuccessResponse&quot;
+  return &quot;SomeFailureResponse&quot;
+
+# User can invoke this via:
+wait({&quot;GroupNames&quot;: [&quot;group1&quot;, &quot;group2&quot;, &quot;group3&quot;]})
+</code></pre>
+<p>This JEP does not require that implementations provide this capability of
+passing in an initial scope, but by requiring that undefined variable
+references are runtime errors it enables implementations to provide this
+capability.  Implementations are also free to provide an opt-in &quot;strict&quot;
+mode that can fail at compile time if a user knows they will not be providing
+an initial scope.</p>
+<h2 id="testcases"><a class="header" href="#testcases">Testcases</a></h2>
+<p>Basic expressions</p>
+<pre><code class="language-yaml"># Basic expressions
+- given:
+    foo:
+      bar: baz
+  cases:
+    - expression: &quot;let $foo = foo in $foo&quot;
+      result:
+        bar: baz
+    - expression: &quot;let $foo = foo.bar in $foo&quot;
+      result: &quot;baz&quot;
+    - expression: &quot;let $foo = foo.bar in [$foo, $foo]&quot;
+      result: [&quot;baz&quot;, &quot;baz&quot;]
+    - comment: &quot;Multiple assignments&quot;
+      expression: &quot;let $foo = 'foo', $bar = 'bar' in [$foo, $bar]&quot;
+      result: [&quot;foo&quot;, &quot;bar&quot;]
+# Nested expressions
+- given:
+    a: topval
+    b:
+      - a: inner1
+      - a: inner2
+  cases:
+    - expression: &quot;let $a = a in b[*].[a, $a, let $a = 'shadow' in $a]&quot;
+      result:
+        - [&quot;inner1&quot;, &quot;topval&quot;, &quot;shadow&quot;]
+        - [&quot;inner2&quot;, &quot;topval&quot;, &quot;shadow&quot;]
+    - comment: Bindings only visible within expression clause
+      expression: &quot;let $a = 'top-a' in let $a = 'in-a', $b = $a in $b&quot;
+      result: &quot;top-a&quot;
+# Let as valid identifiers
+- given:
+    let:
+      let: let-val
+      in: in-val
+  cases:
+    - expression: &quot;let $let = let in {let: let, in: $let}&quot;
+      result:
+        let:
+          let: let-val
+          in: in-val
+        in:
+          let: let-val
+          in: in-val
+    - expression: &quot;let $let = 'let' in { let: let, in: $let }&quot;
+      result:
+        let:
+          let: let-val
+          in: in-val
+        in: &quot;let&quot;
+    - expression: &quot;let $let = 'let' in { let: 'let', in: $let }&quot;
+      result:
+        let: &quot;let&quot;
+        in: &quot;let&quot;
+# Projections stop
+- given:
+    foo: [[0, 1], [2, 3], [4, 5]]
+  cases:
+    - comment: Projection is stopped when bound to variable
+      expression: &quot;let $foo = foo[*] in $foo[0]&quot;
+      result: [0, 1]
+# Examples from Motivation section
+- given:
+    - home_state: WA
+      states:
+        - name: WA
+          cities: [&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;]
+        - name: CA
+          cities: [&quot;Los Angeles&quot;, &quot;San Francisco&quot;]
+        - name: NY
+          cities: [&quot;New York City&quot;, &quot;Albany&quot;]
+    - home_state: NY
+      states:
+        - name: WA
+          cities: [&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;]
+        - name: CA
+          cities: [&quot;Los Angeles&quot;, &quot;San Francisco&quot;]
+        - name: NY
+          cities: [&quot;New York City&quot;, &quot;Albany&quot;]
+  cases:
+    - expression: &quot;[*].[let $home_state = home_state in states[? name == $home_state].cities[]][]&quot;
+      result:
+        - [&quot;Seattle&quot;, &quot;Bellevue&quot;, &quot;Olympia&quot;]
+        - [&quot;New York City&quot;, &quot;Albany&quot;]
+- given:
+    imageDetails:
+      - repositoryName: &quot;org/first-repo&quot;
+        imageTags:
+          - latest
+          - v1.0
+          - v1.2
+        imageDigest: &quot;sha256:abcd&quot;
+      - repositoryName: &quot;org/second-repo&quot;
+        imageTags:
+          - v2.0
+          - v2.2
+        imageDigest: &quot;sha256:efgh&quot;
+  cases:
+    - expression: &gt;
+        imageDetails[].[
+          let $repo = repositoryName,
+              $digest = imageDigest
+          in
+            imageTags[].[@, $digest, $repo]
+        ][][]
+      result:
+        - [&quot;latest&quot;, &quot;sha256:abcd&quot;, &quot;org/first-repo&quot;]
+        - [&quot;v1.0&quot;, &quot;sha256:abcd&quot;, &quot;org/first-repo&quot;]
+        - [&quot;v1.2&quot;, &quot;sha256:abcd&quot;, &quot;org/first-repo&quot;]
+        - [&quot;v2.0&quot;, &quot;sha256:efgh&quot;, &quot;org/second-repo&quot;]
+        - [&quot;v2.2&quot;, &quot;sha256:efgh&quot;, &quot;org/second-repo&quot;]
+# Errors
+- given: {}
+  cases:
+    - expression: &quot;$noexist&quot;
+      error: &quot;undefined-variable&quot;
+    - comment: Reference out of scope variable
+      expression: &quot;[let $scope = 'foo' in [$scope], $scope]&quot;
+      error: &quot;undefined-variable&quot;
+    - comment: Can't use var ref in RHS of subexpression
+      expression: &quot;foo.$bar&quot;
+      error: &quot;syntax&quot;
+</code></pre>
 
                     </main>
 
