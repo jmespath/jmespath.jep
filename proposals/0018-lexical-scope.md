@@ -1,6 +1,6 @@
 # Lexical Scoping
 
-- JEP: (leave blank)
+- JEP: 18
 - Author: @jamesls
 - Created: 2023-03-21
 
