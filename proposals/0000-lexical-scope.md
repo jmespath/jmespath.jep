@@ -202,13 +202,18 @@ for projections (wildcard expressions, the flatten operator, slices and
 filter expressions).  If the expression being bound is a projection, the
 evaluation of this expression effectively stops the projection.  This means
 subsequent references using the `variable-ref` MUST NOT continue projecting
-to child expressions.  For example:
+to child expressions.  For example, this is the behavior for a projection:
 
 ```
 search(
   foo[*][0]
   {"foo": [[0, 1], [2, 3], [4, 5]]}
 ) -> [0, 2, 4]
+```
+
+And this is the behavior when assigning a variable to a projection:
+
+```
 search(
   let $foo = foo[*]
   in
