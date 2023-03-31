@@ -6,6 +6,10 @@ in over 10 languages, and this process ensures stakeholders and community
 members have the opportunity to review and provide feedback before it's
 officially part of the specification.
 
+You can see the list of accepted JEPs at:
+
+https://jmespath.github.io/jmespath.jep/
+
 
 ## Things that need a JEP
 
@@ -51,7 +55,7 @@ can also use that issue to gauge interest in the feature.
    assigned during the review process.
 3. Fill in all sections of the JEP template.  Be mindful of the
    "Motivation" and "Rationale" sections.  These are an important
-   part of driving concensus for a JEP.
+   part of driving consensus for a JEP.
 4. Submit a pull request to this repo.
 5. The JEP will be reviewed and feedback will be provided.  Proposals
    often go through several rounds of feedback, this is a normal and
@@ -60,17 +64,17 @@ can also use that issue to gauge interest in the feature.
    the history and evolution of the proposal remains visible.
 7. The discussions will eventually stabilize to one of several states:
 
-   * The JEP has concensus for both the functionality and the
+   * The JEP has consensus for both the functionality and the
      proposed specification and is ready to be accepted.
-   * The JEP has concensus for the feature but there is not concensus
+   * The JEP has consensus for the feature but there is not consensus
      with the specification.
-   * The JEP does not have concensus for the feature.
+   * The JEP does not have consensus for the feature.
    * The JEP loses steam and the discussions go stale.  This will result
      in the PR being closed, but is subject to being reopened by anyone
      that wants to continue working on the JEP.
 
 8. Once the JEP is approved by the JMESPath core team the pull request
-   will be merged.
+   will be merged and the JEP will be assigned a number.
 
 9. The relevant parts of the "Specification" section will be added to the
    JMESPath specification, and the tests cases from the "Test Cases" section
