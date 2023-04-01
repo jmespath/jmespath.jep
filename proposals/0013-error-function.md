@@ -52,6 +52,24 @@ Suppose the JMESpath author wants to:
 ((status == 'up') && `1`) || ((status == 'down') && `0`) || to_number('bad')
 ```
 
-## Implementation Notes
+### Concrete use cases
 
-Are there any details that implementers should try to follow?
+Using JMEspath in a ETL pipeline that extracts data from a large and diverse set of endpoints (devices and services).
+
+1. The data is obtained from the endpoints using several methods. This may include REST APIs, CLI commands that produce JSON output or semi-structured text output, ansible playbooks, CSV files, or XML content.
+   1. For example, ansible modules may be used to return values in [JSON format](https://docs.ansible.com/ansible/2.9/user_guide/modules_intro.html).
+   1. The JSON data produced by CLI commands and ansible tasks can be very dynamic, e.g., ansible may invoke arbitrary shell commands where the task return values depends on the shell command output.
+1. Data is converted to JSON format using a variety of tools.
+1. JMESpath is then used to extract/filter data from the JSON documents.
+
+Authors who write the ETL pipelines (including writing JMESpath expressions) may want to catch unexpected conditions at various points of the pipeline, such as unexpected input. When errors are detected, actions can be taken to enhance the ETL pipeline. This could be done by improving a JMESpath expression or any other part of the ETL pipeline (e.g., change CLI commands).
+
+For example, the author of a JMESpath expression may know an input JSON document contains a `status` property. She needs to extract and transform `status`, but she is not sure what are all possible input values for that property. She wants to write the JMESpath expression defensively such that she can catch errors and report them. She may start with with following JMESpath expression: 
+
+```
+((status == 'up') && `1`) || ((status == 'down') && `0`)
+```
+
+Because she is not 100% sure the ETL pipeline will always produce input values `up` and `down`, she needs to be able to catch the error at the specific JMESpath statement where the unexpected condition has been encountered.
+
+Without support for the `error` function in JMESpath expressions, an alternative approach is to use separate tools for validation. For example, write a JSON schema that specifies two enum values for the `status` property. However, users have to write the validation logic in a different language. The user must replicate the same runtime evaluation logic as the JMESpath expression. In the above example with the `status` property, the logic is simple (two enum values) but in other cases, the JMESpath expression may reach an unexpetected condition with more complex scenarios. This may lead to problems where the validation logic does not match the JMESpath logic.
