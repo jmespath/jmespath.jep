@@ -17,12 +17,7 @@ This could be used to detect and raise an error when input JSON documents have u
 
 AFAIK, there is no dedicated function to raise a runtime error within a JMESpath expression. Having a new `error()` function would help to catch errors at the specific point of the JMESpath expression where the error is detected. See "Concrete use cases" section for a complete ETL pipeline example.
 
-## Specification
-
-Add a new `error` function that takes a string expression.
-If the `error` function is evaluated, an error is raised with the specified string message.
-
-## Rationale
+### Example
 
 Suppose we have the following JSON documents:
 ```json
@@ -59,7 +54,12 @@ For example, the author of a JMESpath expression may know an input JSON document
 
 Because she is not 100% sure the ETL pipeline will always produce input values `up` and `down`, she needs to be able to catch the error at the specific JMESpath statement where the unexpected condition has been encountered.
 
-### Other options that have been considered
+## Specification
+
+Add a new `error` function that takes a string expression.
+If the `error` function is evaluated, an error is raised with the specified string message.
+
+## Other options that have been considered
 
 Without support for the `error` function in JMESpath expressions, an approach is to use separate tools for validation. For example, write a JSON schema that specifies two enum values for the `status` property. However, users have to write the validation logic in a different language. The user must replicate the same runtime evaluation logic as the JMESpath expression. In the above example with the `status` property, the logic is simple (two enum values) but in other cases, the JMESpath expression may reach an unexpetected condition with more complex scenarios. This may lead to problems where the validation logic does not match the JMESpath logic. Furthermore, when the ETL pipeline contains thousands of JMESpath expressions, it becomes very difficult to ensure validation performed by external tools matches expectations of JMESpath expressions, especially as the ETL pipeline evolves over time.
 
