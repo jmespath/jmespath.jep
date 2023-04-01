@@ -15,8 +15,7 @@ This could be used to detect and raise an error when input JSON documents have u
 
 ## Motivation
 
-AFAIK, there is no dedicated function to raise a runtime error within a JMESpath expression.
-
+AFAIK, there is no dedicated function to raise a runtime error within a JMESpath expression. Having a new `error()` function would help to catch errors at the specific point of the JMESpath expression where the error is detected. See "Concrete use cases" section for a complete ETL pipeline example.
 
 ## Specification
 
